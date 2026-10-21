@@ -76,6 +76,15 @@ no overlap, and every cut between two presenters lands in silence, so a presente
 portrait pose at the start of a clip is hidden by the cut. Each segment's audio drives one InfiniteTalk
 clip of that speaker.
 
+With one presenter there is no other face to cut to, and a cut on every line shows: the hands drop back
+to the portrait's pose at every sentence. `--group-gap 1.0` makes one segment of each run of one
+speaker's lines with less than a second between them, so a block of the script (lines that end on a
+longer pause, `lines.ts --pause`) is one continuous clip. The 23 lines of
+[videos/wayland-asahi](../videos/wayland-asahi/script.txt) render as six clips of 16-27 s, one per thing
+the recording shows, and each cut lands in a pause where the picture changes anyway. A clip has one
+layout, so the plan gets the same `--group-gap` and gives a block's turns one layout; the compose
+refuses a clip whose turns were planned to show different things rather than follow its first turn.
+
 ## The talking clip
 
 InfiniteTalk is an audio-driven video model on Wan2.1-I2V-14B: a portrait plus speech gives a video of
@@ -112,15 +121,20 @@ flowchart LR
   in["claims · turns · shots"] --> claude["Claude<br/>(claude -p, JSON schema)"]
   claude --> check{"rule check"}
   check -- "passes" --> sb["storyboard.json"]
-  check -- "breaks a rule" --> refused["refused<br/>(kept for reading)"]
+  check -- "breaks a rule" --> repair["Claude again, once:<br/>its answer + the problems"]
+  repair --> check2{"rule check"}
+  check2 -- "passes" --> sb
+  check2 -- "breaks a rule" --> refused["refused<br/>(kept for reading)"]
 ```
 
 The rules are checked in code, not trusted to the model: one beat per turn; the first turn shows the
 recording; at most three solo turns, never two in a row, never longer than about three seconds of
 speech; every turn after the recording ends is an end card and none before; cards of at most six words
 and 32 characters, without dashes, inside the recording, not overlapping, each citing a claim, the
-first one at zero; a cover of at most 28 characters. A plan that breaks one is refused, never patched
-quietly.
+first one at zero; a cover of at most 28 characters. A plan that breaks one goes back to Claude once,
+with its own answer and the check's words for what is wrong, because a model miscounts now and then (a
+seven-word card read as six) and a fresh plan for one long card would be a different plan, not a fix.
+The reply is checked the same way. A plan that still breaks a rule is refused, never patched quietly.
 
 ## The layouts
 
@@ -128,6 +142,24 @@ quietly.
 presenter sits in a rounded bubble at the bottom right, ringed in their colour. There is no listener:
 the frame belongs to the recording. A solo turn puts the speaker in a large centred tile; the end card
 puts the title and subtitle above the speaker's bubble.
+
+**16:9, tutor** (`--layout tutor`). A presenter who gestures needs room for the hands, and a bubble
+crops them away. Here the recording sits on the left at 1152x648 (60% of the width), the cards above it
+and the captions below it, and the presenter fills a tall panel on the right, 1000 px high, for the
+whole video, like a teacher beside a screen. The recording stays up through solo turns; the end card
+takes its place at the end.
+
+```text
++--------------------------------------+---------------+
+| card                                 | Goran · AI    |
+| +----------------------------------+ | avatar        |
+| |              Real screen rec.    | |               |
+| |   the recording, 1152x648        | |  the          |
+| |                                  | |  presenter,   |
+| +----------------------------------+ |  waist up,    |
+|              captions                |  hands in it  |
++--------------------------------------+---------------+
+```
 
 **9:16.** The recording sits at the top of the platforms' safe zone (1080x608 at y 370), the captions
 below it, and the two presenters as video-call tiles below those. The speaker's tile is lit and ringed;

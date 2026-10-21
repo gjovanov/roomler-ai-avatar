@@ -1,0 +1,4 @@
+interface:
+  display_name: "Demo First Scriptwriter"
+  short_description: "Proof-led tech demos with a professional voice and dry humor."
+  default_prompt: "Use Demo First Scriptwriter to turn my notes or rough draft into a ready-to-record product demo. Lead with visible proof, explain the engineering clearly, add restrained humor, and keep every claim scoped to the evidence."

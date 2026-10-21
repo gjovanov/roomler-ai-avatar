@@ -2,7 +2,8 @@
 // Copyright (C) 2026 G ROX EOOD
 //
 // Claude, headless: one `claude -p` run of Claude Code that answers with JSON matching a schema. It is
-// the only LLM call in the pipeline (storyboard.ts). Claude Code authenticates as you are logged in:
+// the only LLM in the pipeline (storyboard.ts: one run, and one repair run when its answer breaks a
+// rule). Claude Code authenticates as you are logged in:
 // a Claude subscription (`claude` once, then /login) or an API key (ANTHROPIC_API_KEY).
 //
 // The run gets no tools at all (--tools ""), no MCP servers and no saved session: it reads the prompt

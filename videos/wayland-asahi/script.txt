@@ -1,0 +1,34 @@
+# Wayland. Mac mini. One browser tab. One presenter: Goran, in his own cloned voice (goran3).
+# Written with the demo-first-scriptwriter skill; every claim is in brief.yaml. Lines starting with #
+# are the shots, not spoken. Each block ends on a longer pause (lines.ts --pause), and talk.ts
+# --group-gap renders each block as one continuous clip.
+#
+# [The About window and the spinning cube of a KDE Plasma desktop, live in a browser tab.]
+goran3: Looks local, doesn't it?
+goran3: That's a Mac mini running Linux and Wayland, and I'm controlling it from this browser tab.
+goran3: A big thank-you to the Asahi Linux team for the Linux-on-a-Mac part.
+goran3: The remote control? That's Roomler. No separate viewer to install.
+# [A window dragged across the desktop at full speed; the viewer's own frame counter enlarged.]
+goran3: Watch the movement. Fifty-six frames per second in this demo. Every frame encoded in software.
+goran3: The earlier build managed twenty-seven on this setup.
+goran3: Same Mac. More than twice the frame rate.
+# [GNOME on the same Mac, then KDE again; the desktop keeps moving.]
+goran3: The interesting part is why.
+goran3: The encoder pauses between frames. Linux saw those pauses and decided it didn't need much performance, so it put the work on an efficiency core at a lower clock.
+goran3: Roomler now explicitly asks the scheduler for performance while encoding.
+goran3: The CPU wasn't out of horsepower. It was in economy mode.
+# [A text editor opens; a sentence is typed, zoomed 2x.]
+goran3: But I don't spend my day admiring frame counters. Let's actually use it.
+goran3: I'll open an editor and type a line.
+goran3: That feels local.
+goran3: Unfortunately, so does my spelling. We haven't fixed that yet.
+# [The sharing banner at the top of the remote screen, zoomed 2x: who is watching, a timer, Disconnect.]
+goran3: And the person at the other end shouldn't have to guess whether someone's watching.
+goran3: In this setup, Roomler only captures while that user's session is on screen and unlocked.
+goran3: The banner shows who's connected. The Disconnect button lets the person at the machine end the session.
+goran3: Remote access shouldn't mean giving up control.
+# [The end card.]
+goran3: That's Roomler: a Wayland desktop you can actually work with, right in your browser.
+goran3: Open source. Self-hostable.
+goran3: Try it on your own setup, or take a look under the hood. The project and GitHub links are below.
+goran3: Talk to you soon.

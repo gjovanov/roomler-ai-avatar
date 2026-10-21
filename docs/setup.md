@@ -36,7 +36,7 @@ run yet.
 | NVIDIA driver | Windows (for WSL2) or Linux | new enough for CUDA 12.8+ wheels; RTX 50xx needs it |
 | WSL2 with Ubuntu 22.04/24.04 | Windows | give it at least 32 GB of RAM in `.wslconfig` (`memory=`) |
 | git, python3 (3.10+) with venv, curl | the GPU side | `sudo apt install git python3-venv curl` |
-| ffmpeg with libass and libx264 | where the tools run | Windows: the gyan.dev "full" build; Linux: `apt install ffmpeg` |
+| ffmpeg with libass, libx264 and librubberband | where the tools run | Windows: the gyan.dev "full" build; Linux: `apt install ffmpeg` |
 | [bun](https://bun.sh) 1.1+ | where the tools run | `powershell -c "irm bun.sh/install.ps1 \| iex"` or `curl -fsSL https://bun.sh/install \| bash` |
 | [Claude Code](https://docs.claude.com/en/docs/claude-code) | where the tools run | run `claude` once and log in (a Claude plan or an API key); the plan step calls `claude -p` |
 | tesseract-ocr | the GPU side | optional, for `tools/check.ts --deny` |
@@ -70,7 +70,7 @@ environment variables do not reach WSL.
 | `AVATAR_VOICES_DIR` | the engine's own voices | your own voice prompts, e.g. a consented clone (Linux side) |
 | `AVATAR_WORK` | `~/roomler-avatar-work` (under WSL: `%USERPROFILE%\roomler-avatar-work`) | ComfyUI's input and output; both sides must see the same folder |
 | `AVATAR_PRESENTERS` | `presenters/presenters.json` | the presenters registry |
-| `AVATAR_PRIVATE` | `~/roomler-avatar-private` | real people's portraits, kept out of every repository |
+| `AVATAR_PRIVATE` | `~/roomler-avatar-private` | real people's portraits that are not to be published, kept out of every repository |
 | `AVATAR_MIN_FREE_MB` | `6000` | a render stops when the host has less memory available than this |
 | `AVATAR_FONT_FILE`, `AVATAR_CAPTION_FONT` | Segoe UI (Windows), DejaVu Sans (Linux) | the fonts of the labels, cards and captions |
 

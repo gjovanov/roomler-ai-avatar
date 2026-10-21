@@ -14,7 +14,14 @@ anyone.
   synthetic-performer law, the EU AI Act's deep-fake disclosure in Art. 50(4)).
 - The person sees the video before anyone else does, and can pull it.
 
-## Keep the face and the voice out of every repository
+## Keep the voice out of every repository, and the face unless they agree
+
+A face the person has agreed to publish can live in `presenters/` like an invented one, and their
+consent says so. This repository's `goran`, `goran-classic`, `goran-warm` and `goran-tutor` are its
+maintainer, published with his consent. His voice prompt is not here, and a voice prompt never belongs
+in a repository: ten seconds of it are all anyone needs to make that voice say anything.
+
+Everything else stays private:
 
 ```mermaid
 flowchart LR
@@ -63,6 +70,17 @@ Qwen-Image-Edit-2511 keeps the identity of the reference photo while it changes 
 Let the person pick their own portrait: it is their face. A photo that is already a good head-and-
 shoulders shot can be used as it is: crop it square and put it in the private folder.
 
+For the tutor layout the portrait is waist up, with both hands in the picture, at the clip's tall shape
+(`goran-tutor` was made this way from a head-and-shoulders library photo):
+
+```bash
+bun tools/avatar/portrait.ts edit noah-tutor --from photo.jpg --wh 832x1248 --seeds 21,22,23 \
+  --prompt "A waist-up photograph of this same man standing and presenting to the camera ... both hands visible in front of his chest ..."
+```
+
+Ask for a relaxed, neutral expression with the mouth closed: the clip starts from this face, and a
+portrait that is already smiling or mid-word keeps that look through every pause.
+
 Several pictures of one person are several presenters with the same `voice`. `talk.ts --face
 noah=noah-studio,noah-garden` shows the voice with one of them, or rotates them through the turns.
 
@@ -77,6 +95,10 @@ like it was spoken down a tunnel, and a person hears that in their own voice at 
 - **An idle clip.** InfiniteTalk driven by silence keeps the mouth busy anyway: chewing, squinting. On
   an invented face it passes as listening; on a real one the person will tell you it looks unnatural.
   The 16:9 shows only the speaker, and the 9:16's default listener is a still.
+- **Too much face.** The default talk prompt asks for energy, raised eyebrows and nods. On an invented
+  face that reads as lively; on a real one the person may see themselves pulling faces. For someone who
+  explains, ask for a calm face and a steady gaze, and let the hands carry the emphasis (the
+  `goran-tutor` talk prompt), from a portrait that shows the hands.
 - **A selfie with an arm reaching out.** It works, but the arm never moves, and a solo tile shows it
   large.
 - **A busy background.** The prompt asks for a still background, and it mostly holds; a plain one holds

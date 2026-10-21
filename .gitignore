@@ -8,10 +8,12 @@
 *.m4a
 *.aac
 out/
+*.log
 example/out/
-compose-9x16/
-compose-16x9/
+compose-9x16*/
+compose-16x9*/
 node_modules/
 .DS_Store
-# A real person's face and voice live outside the repository (AVATAR_PRIVATE, AVATAR_VOICES_DIR).
+# A real person's voice lives outside the repository, and so does their face unless they agreed to publish
+# it (AVATAR_VOICES_DIR, AVATAR_PRIVATE).
 private/

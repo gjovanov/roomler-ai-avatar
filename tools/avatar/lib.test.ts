@@ -2,7 +2,7 @@
 // Copyright (C) 2026 G ROX EOOD
 
 import { describe, expect, test } from "bun:test";
-import { assColor, assColorA, bestWordsPerTurn, karaokeAss, pages, pinnedSegments, segments, wordTimes } from "./lib.ts";
+import { assColor, assColorA, bestWordsPerTurn, groupTurns, karaokeAss, pages, pinnedSegments, segments, wordTimes } from "./lib.ts";
 
 const turns = [
   { speaker: "michael", text: "Okay. This is a Mac mini.", start: 0.56, end: 2.5 },
@@ -16,6 +16,29 @@ describe("segments", () => {
     expect(s.map((x) => [x.speaker, x.start, x.end])).toEqual([["michael", 0, 2.9], ["emma", 2.9, 5.4], ["michael", 5.4, 8.4]]);
     for (let i = 1; i < s.length; i++) expect(s[i].start).toBe(s[i - 1].end);
     s.forEach((x, i) => { expect(x.start).toBeLessThanOrEqual(turns[i].start); expect(x.end).toBeGreaterThanOrEqual(turns[i].end); });
+  });
+});
+
+describe("groupTurns", () => {
+  const solo = [
+    { speaker: "noah", text: "One.", start: 0.5, end: 1.5 },
+    { speaker: "noah", text: "Two.", start: 1.9, end: 3.0 }, // 0.4 s later: the same block
+    { speaker: "noah", text: "Three.", start: 4.2, end: 5.0 }, // after a 1.2 s pause: the next block
+    { speaker: "emma", text: "Four.", start: 5.3, end: 6.0 }, // another speaker: always a unit of its own
+  ];
+  test("a block of one speaker's lines is one unit; a longer pause or another speaker starts the next", () => {
+    const { groups, units } = groupTurns(solo, 1.0);
+    expect(groups).toEqual([[0, 1], [2], [3]]);
+    expect(units[0]).toEqual({ speaker: "noah", text: "One. Two.", start: 0.5, end: 3.0 });
+  });
+  test("gap 0 keeps every turn on its own", () => {
+    const { groups, units } = groupTurns(solo, 0);
+    expect(groups).toEqual([[0], [1], [2], [3]]);
+    expect(units).toEqual(solo);
+  });
+  test("the units tile the timeline like turns: every cut lands in the pause between two blocks", () => {
+    const s = segments(groupTurns(solo, 1.0).units, 7);
+    expect(s.map((x) => [x.start, x.end])).toEqual([[0, 3.6], [3.6, 5.15], [5.15, 7]]);
   });
 });
 

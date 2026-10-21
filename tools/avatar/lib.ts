@@ -23,6 +23,21 @@ export function segments(turns: TimedTurn[], total: number): Segment[] {
   }));
 }
 
+/** Clip units (talk.ts --group-gap): each run of one speaker's turns less than `gap` seconds apart is
+ *  one unit, its text the turns' text joined and its speech from the first turn's start to the last
+ *  one's end. A presenter alone then renders a block of lines as one continuous clip instead of
+ *  resetting to the portrait's pose at every line. `gap` 0 keeps every turn on its own. */
+export function groupTurns(turns: TimedTurn[], gap: number): { groups: number[][]; units: TimedTurn[] } {
+  const groups: number[][] = [];
+  turns.forEach((t, k) => {
+    const g = groups[groups.length - 1], last = g ? turns[g[g.length - 1]] : null;
+    if (gap > 0 && last && last.speaker === t.speaker && t.start - last.end < gap) g.push(k);
+    else groups.push([k]);
+  });
+  const units = groups.map((g) => ({ speaker: turns[g[0]].speaker, text: g.map((k) => turns[k].text).join(" "), start: turns[g[0]].start, end: turns[g[g.length - 1]].end }));
+  return { groups, units };
+}
+
 /** Segments where some turns keep the window an earlier render gave them: `lead` seconds before their
  *  speech and `tail` after it. A presenter's clip can then be reused when only the other presenter
  *  was re-voiced: the reused turn's audio window is the same speech at the same offsets, and the

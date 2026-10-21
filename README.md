@@ -2,12 +2,12 @@
 
 AI presenters beside a real screen recording, made on your own GPU.
 
-You bring a short two-host script, a brief with the claims the video may make, and a screen recording of
-your product. The tools render the voices, the presenters' talking faces and word-by-word captions,
-let Claude plan the edit, and put it all together as a vertical 9:16 and a 16:9 video, with the AI
-disclosure in the picture from the first frame. This is a local, open-weights take on what services like
-HeyGen, Creatify and Zeely sell, built for one job: product videos where the presenters are hosts and
-the real recording is the proof.
+You bring a short script for one or two presenters, a brief with the claims the video may make, and a
+screen recording of your product. The tools render the voices, the presenters' talking faces and
+word-by-word captions, let Claude plan the edit, and put it all together as a vertical 9:16 and a 16:9
+video, with the AI disclosure in the picture from the first frame. This is a local, open-weights take on
+what services like HeyGen, Creatify and Zeely sell, built for one job: product videos where the
+presenters are hosts and the real recording is the proof.
 
 <p align="center">
   <img src="docs/assets/example-16x9.jpg" alt="The 16:9 layout: a screen recording fills the frame (here a test pattern), a card at the top left reads 'Nothing to install on this side', the speaking presenter Emma sits in a ringed bubble at the bottom right labelled 'Emma · AI presenter', and a caption below highlights the word being said" width="560">
@@ -17,7 +17,7 @@ the real recording is the proof.
 
 ```mermaid
 flowchart LR
-  script["script.txt<br/>two hosts, one line per turn"] --> voice["VibeVoice<br/>one line at a time"]
+  script["script.txt<br/>one or two presenters, one line per turn"] --> voice["VibeVoice<br/>one line at a time"]
   voice --> talk["InfiniteTalk<br/>a talking clip per turn"]
   faces["presenter portraits<br/>Z-Image-Turbo or your photo"] --> talk
   voice --> words["Whisper<br/>word times"]
@@ -42,7 +42,10 @@ self-hostable with unlimited devices. If you look after machines in more than on
 [github.com/gjovanov/roomler-ai](https://github.com/gjovanov/roomler-ai).
 
 The two presenters here, Michael and Emma, are the hosts of Roomler's videos. They are invented people:
-their faces come from a text prompt, and their voices from a text-to-speech model.
+their faces come from a text prompt, and their voices from a text-to-speech model. In some videos Goran,
+who maintains Roomler, presents it himself as an AI avatar made from his own photos, with his consent:
+his portraits are in [`presenters/`](presenters/), and his voice prompt is not
+([docs/real-person.md](docs/real-person.md)).
 
 ## What it does
 
@@ -51,15 +54,17 @@ their faces come from a text prompt, and their voices from a text-to-speech mode
 | The narration, one line at a time, checked by Whisper | `tools/voice/lines.ts` | VibeVoice-1.5B (MIT) via [starling's podcast-server](https://github.com/gjovanov/starling/tree/master/apps/podcast-server) | GPU |
 | Every line's pitch and pace, against its speaker | `tools/voice/pitch.ts` | | CPU |
 | The audio at -14 LUFS, with an optional music bed that dips under speech | `tools/voice/mix.ts` | | CPU |
+| The same narration a little deeper, every time kept | `tools/voice/retune.ts` | rubberband | CPU |
 | Word times for the captions, one turn at a time | `tools/avatar/words.ts` | Whisper medium.en (MIT) | GPU or CPU |
 | A presenter's face: invented, or from your own photo | `tools/avatar/portrait.ts` | Z-Image-Turbo, Qwen-Image-Edit-2511 (Apache-2.0) | GPU |
 | The edit plan: a layout per turn, cards that cite your claims, hook variants, a cover | `tools/avatar/storyboard.ts` | **Claude**, through Claude Code | Anthropic |
-| A talking clip per turn, cut in the silence between turns | `tools/avatar/talk.ts` | InfiniteTalk on Wan2.1-I2V-14B (Apache-2.0) | GPU |
-| The 9:16 and the 16:9, captions, cards and disclosure | `tools/avatar/compose.ts`, `compose16.ts` | | CPU |
+| A talking clip per turn (or per block of one presenter's lines), cut in the silence between them | `tools/avatar/talk.ts` | InfiniteTalk on Wan2.1-I2V-14B (Apache-2.0) | GPU |
+| The 9:16 and the 16:9 (a corner bubble, or a tutor beside the screen), captions, cards and disclosure | `tools/avatar/compose.ts`, `compose16.ts` | | CPU |
 | A thumbnail | `tools/avatar/cover.ts` | | CPU |
 | Specs, loudness, and what the recording must not show | `tools/check.ts` | tesseract (optional) | CPU |
 
-Claude is the only LLM call, and it writes no word of the narration: it plans what the viewer sees.
+Claude is the only LLM in the pipeline, and it writes no word of the narration: it plans what the viewer
+sees.
 The models run locally through [ComfyUI](https://github.com/comfyanonymous/ComfyUI), headless, driven
 over its HTTP API by the bun scripts here. [docs/models.md](docs/models.md) has every model, its
 licence and its role.
@@ -85,14 +90,16 @@ bun tools/avatar/words.ts example/out/narration --out example/out/words.json    
   `--swap`, slower and untested), and 32 GB of RAM or more.
 - Windows 11 with WSL2 (tested), or Linux. The GPU side runs on Linux; the tools run on either side.
 - About 75 GB of disk: 54 GB of model weights (84 GB with the optional photo-to-portrait model), plus the voice engine and the virtual environments.
-- [bun](https://bun.sh), ffmpeg (with libass and libx264), and
+- [bun](https://bun.sh), ffmpeg (with libass, libx264 and librubberband), and
   [Claude Code](https://docs.claude.com/en/docs/claude-code) logged in, for the plan.
 
 ## What to expect
 
-A 75-second two-host video takes one to two hours of GPU time for its talking clips, a few minutes for
-everything else, and a person's judgement at three points: the voice takes, the faces, and the final
-cut. Lip sync is tight, the presenters blink and move their heads, and identity holds through a clip.
+A 75-second two-host video takes one to two hours of GPU time for its talking clips (a 125-second
+one-presenter video took 84 minutes), a few minutes for everything else, and a person's judgement at
+three points: the voice takes, the faces, and the final cut. Lip sync is tight, the presenters blink and
+move their heads, and identity holds through a clip; a presenter whose portrait shows the hands
+gestures with them.
 Some voice takes come out wrong (an octave up, mumbled, rushed) and are measured and rendered again.
 [docs/expectations.md](docs/expectations.md) has the measured numbers, the quality you get, and every
 trap we hit, including the one that crashed a laptop.
@@ -107,6 +114,10 @@ trap we hit, including the one that crashed a laptop.
 - [docs/real-person.md](docs/real-person.md): your own face and voice, consent, and disclosure
 - [`.claude/skills/avatar-video`](.claude/skills/avatar-video/SKILL.md): a Claude Code skill that drives
   the whole process, from the script to the checks
+- [`.claude/skills/demo-first-scriptwriter`](.claude/skills/demo-first-scriptwriter/SKILL.md): a Claude
+  Code skill that writes a one-presenter product demo: the proof on screen first, the explanation after,
+  every claim scoped to its evidence
+- [`videos/`](videos/): the script and the brief of real videos made with it
 
 ## Rules this tool is built around
 
@@ -116,7 +127,8 @@ trap we hit, including the one that crashed a laptop.
 - **Disclosure is in the picture from the first frame.** Every presenter's label says "AI presenter"
   (or "AI avatar" for a real person's likeness), and the recording says it is real. The EU AI Act's
   Art. 50 asks for a visible label at first exposure; set the platforms' own AI flags as well.
-- **A real person's face or voice needs their recorded consent**, and stays out of the repository
+- **A real person's face or voice needs their recorded consent.** Their voice prompt never goes into a
+  repository, and their face only when they have agreed to publish it
   ([docs/real-person.md](docs/real-person.md)).
 
 ## Licence

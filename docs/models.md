@@ -11,13 +11,15 @@ Claude is the only call to a hosted model, and it is used for one step: planning
 | How it is called | headless Claude Code: `claude -p` with `--json-schema`, no tools, no MCP servers, no saved session (`tools/llm/claude.ts`) |
 | Model | `opus` by default (the current Claude Opus; `claude-opus-5-5` when this was written), `--model sonnet` or any model id for a cheaper run; a comma-separated list falls back when a model is out of usage |
 | Authentication | whatever Claude Code is logged in with: a Claude plan, or an API key (`ANTHROPIC_API_KEY`) |
-| Time | about 35 seconds per plan |
+| Time | 35 s for the four-turn example, 70-90 s for a 23-turn video |
 | What it sees | the brief's claims, the narration's turns with their times, and your description of the recording's shots |
-| Checked after | every rule of the plan in code; a plan that breaks one is refused, never patched (docs/how-it-works.md) |
+| Checked after | every rule of the plan in code; a plan that breaks one goes back once with the problems, and is refused if the answer still breaks one, never patched (docs/how-it-works.md) |
 
 The [Claude Code skill](../.claude/skills/avatar-video/SKILL.md) in this repository lets Claude Code drive
-the whole process interactively, including drafting the two-host script with you. That is Claude
-working with you in a session; no tool here calls an LLM to write a script.
+the whole process interactively, including drafting the script with you, and the
+[demo-first-scriptwriter skill](../.claude/skills/demo-first-scriptwriter/SKILL.md) writes a one-presenter
+product demo that leads with what the recording proves. That is Claude working with you in a session; no
+tool here calls an LLM to write a script.
 
 Language models also sit inside some of the open models below, as text encoders or backbones: Qwen2.5-1.5B
 inside VibeVoice, Qwen3-4B in front of Z-Image-Turbo, Qwen2.5-VL-7B in front of Qwen-Image-Edit, and umT5-XXL

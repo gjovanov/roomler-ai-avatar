@@ -7,7 +7,7 @@ step's output is the next one's input, so you can stop, look, and run a step aga
 ```mermaid
 flowchart TD
   A["1 · script + brief"] --> B["2 · narration<br/>lines.ts, pitch.ts"]
-  B --> C["3 · audio<br/>mix.ts"]
+  B --> C["3 · audio<br/>mix.ts, retune.ts"]
   B --> D["4 · word times<br/>words.ts"]
   R["your screen recording"] --> E["5 · shots + plan<br/>shots.ts, storyboard.ts (Claude)"]
   B --> E
@@ -37,6 +37,13 @@ What works on screen, from the videos made with it:
 - **End a short line with a full stop, not an exclamation mark,** when it comes out pitched (step 2).
 - **A very short line can come out rushed.** Six or seven words rendered in a second and a quarter
   sound cut off; see step 2's fix.
+
+**One presenter, explaining.** A single presenter works too. Write the script in blocks, one block per
+thing the recording shows, and end each block on a longer pause (`lines.ts --pause n:1.2`); step 6's
+`--group-gap` then renders each block as one continuous clip, so the presenter's gestures carry through
+a block instead of resetting at every line. The
+[demo-first-scriptwriter skill](../.claude/skills/demo-first-scriptwriter/SKILL.md) writes this kind of
+script with you, and [videos/wayland-asahi/](../videos/wayland-asahi/) is one, with its brief.
 
 The brief (`brief.yaml`) names the product and lists the claims the video may make, each with a source.
 The plan cites a claim for every card on screen, so a claim you cannot source has no business being
@@ -88,6 +95,18 @@ Writes `out/narration/mix.wav` at -14 LUFS with a -2 dBTP ceiling, one second lo
 music bed sits at -24.5 LUFS between turns and 7 dB lower under each one (`--bed-lufs`, `--duck`). Use
 music you are licensed to publish.
 
+**The same voice, a little deeper:**
+
+```bash
+bun tools/voice/retune.ts out/narration out/narration-deep --st -1.5    # --formant preserved: the pitch alone
+bun tools/voice/mix.ts out/narration-deep --music track.mp3 --music-start 30
+```
+
+rubberband lowers the pitch and keeps the length to the sample, so the turns, the word times, the plan
+and the talking clips of the original all still fit: compose the new `mix.wav` with the original's
+`talk.json` and words. `retune.json` records the shift it measured (-1.5 asked, -1.3 measured on a male
+voice).
+
 ## 4. Word times
 
 ```bash
@@ -124,8 +143,14 @@ rules.md` for your own writing rules) returns:
 - three alternative opening lines for an A/B test, and a cover text and face.
 
 The answer is checked rule by rule (no solo first turn, no two solos in a row, cards inside the
-recording and not overlapping, each one citing a claim, and so on), and a plan that breaks a rule is
-refused, never patched. It takes about 35 seconds.
+recording and not overlapping, each one citing a claim, and so on). A plan that breaks a rule goes back
+to Claude once, with the check's own words ("card ... is over six words or 32 characters"), and the
+answer is checked the same way; if it still breaks one, it is refused, never patched. It takes 35 s for
+the four-turn example and 70-90 s for a 23-turn video.
+
+With one presenter and `talk.ts --group-gap` (step 6), give the plan the same `--group-gap 1.0`: each
+block of lines becomes one clip, a clip has one layout, and the plan then gives every turn of a block
+the same one. The compose refuses a clip whose turns were planned to show different things.
 
 After re-voicing a narration (another voice, a re-rendered line), keep the approved plan:
 `storyboard.ts retime --from old/storyboard.json --old-shots old/shots.json --old-narration old/narration`
@@ -149,8 +174,10 @@ minute of GPU per second of video (docs/expectations.md).
 | `--reuse old/talk.json` | | keep another edition's clips where speaker, face, words and timing match |
 | `--face noah=noah-studio,noah-garden` | | show a voice with another face, or several faces in rotation |
 | `--clips shared/` | | one clip folder for several editions, so they find each other's clips |
+| `--group-gap 1.0` | 0 (off) | one clip for each run of one speaker's lines less than this many seconds apart: a presenter alone gestures through a block instead of resetting at every line (step 1); not with `--reuse` yet |
+| `--audio-scale 0.9` | 1 | how strongly the speech drives the motion; the talk prompt does more for a calm face |
 | `--swap 8` | 8 | transformer blocks kept in system RAM (more: less VRAM, slower) |
-| `--size 640x640`, `--steps 6` | | resolution and sampling steps |
+| `--size 640x640`, `--steps 6` | | resolution and sampling steps; `512x768` for the tutor layout (step 7) |
 | `--idle 3.24` | 0 | an idle loop per presenter, for `compose.ts --listener idle` |
 
 ## 7. Compose
@@ -165,6 +192,12 @@ bun tools/avatar/cover.ts --storyboard out/storyboard.json --out out/cover.png
 
 - **16:9**: the recording full frame, the speaking presenter in a bubble at the bottom right, cards at
   the top left, captions along the bottom.
+- **16:9, `--layout tutor`**: for a presenter who explains with their hands. The recording sits on the
+  left at 1152x648, the cards above it and the captions below it, and the presenter fills a tall panel
+  on the right for the whole video, like a teacher beside a screen. Give it clips taller than wide
+  (`talk.ts --size 512x768`) from a waist-up portrait with both hands in the picture
+  (`portrait.ts edit <name> --from photo.jpg --wh 832x1248`), and a talk prompt that asks for a calm face
+  and presentation gestures (the `goran-tutor` entry in `presenters/presenters.json`).
 - **9:16**: the recording at the top of the safe zone, captions below it, the presenters as two
   video-call tiles. `--listener still` (default) shows the listener's portrait, dimmed; `idle` plays an
   idle loop; `none` shows the speaker alone. For text to read on a phone, give the vertical a recording

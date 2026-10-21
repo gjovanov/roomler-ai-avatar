@@ -18,7 +18,7 @@ import { pitchTrack, speechSpans } from "./podcast-lib.ts";
 
 const args = process.argv.slice(2);
 const dir = resolve(args[0] ?? "");
-const maxSt = Number(args[args.indexOf("--max-st") + 1] || 4);
+const at = args.indexOf("--max-st"), maxSt = at >= 0 ? Number(args[at + 1]) : 4;
 if (!args[0]) { console.error("usage: pitch.ts <narration dir> [--max-st 4]"); process.exit(2); }
 const pcm = (f: string) => {
   const b = Bun.spawnSync(["ffmpeg", "-hide_banner", "-loglevel", "error", "-i", f, "-ac", "1", "-ar", "16000", "-f", "f32le", "-"], { stdout: "pipe" }).stdout;

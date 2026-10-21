@@ -23,9 +23,9 @@ export function loadPresenters(): Record<string, any> {
   return reg;
 }
 
-/** A real person's face never enters a repository: a presenter whose portrait is "private:<file>" keeps
- *  it in AVATAR_PRIVATE (default ~/roomler-avatar-private). Other portraits are relative to the
- *  registry's folder, or absolute. */
+/** A real person's face enters a repository only with their consent to publish it: a presenter whose
+ *  portrait is "private:<file>" keeps it in AVATAR_PRIVATE (default ~/roomler-avatar-private). Other
+ *  portraits are relative to the registry's folder, or absolute. */
 export const PRIVATE = resolve(process.env.AVATAR_PRIVATE ?? join(homedir(), "roomler-avatar-private"));
 export function portraitFile(portrait: string): string {
   if (portrait.startsWith("private:")) return join(PRIVATE, portrait.slice("private:".length));

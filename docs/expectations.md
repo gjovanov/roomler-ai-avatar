@@ -11,9 +11,10 @@ VRAM will be slower or not fit.
 | One narration line (VibeVoice) | 10-20 s | plus a few seconds of Whisper checking it |
 | A 4-line narration, end to end | 82 s | the example |
 | Word times, Whisper medium per turn | 13 s for 4 turns | on the GPU |
-| The plan (Claude Opus, via Claude Code) | 34-37 s | per run; a refused plan is run again |
+| The plan (Claude Opus, via Claude Code) | 34-37 s for 4 turns, 71-86 s for 23 | per run; a plan that breaks a rule gets one repair run |
 | A talking clip, 640x640, 6 steps | **42-70x real time**, i.e. 0.7-1.2 min of GPU per second of video | with `--swap 8`, the model unloaded between clips, the host not paging |
 | ... the same, under memory pressure | 92-107x real time | the night the host was paging hard (the crash below) |
+| A talking clip, 512x768 (tutor), 6 steps | **37-43x real time** | six block clips of 16-27 s, 124.8 s of video in 84 minutes |
 | Model load from ext4 / from a Windows drive (9p) | 7 s / 12-20 min | per clip, see setup |
 | A portrait (Z-Image-Turbo / Qwen-Image-Edit) | 10-20 s each | after a first load of about a minute |
 | Compose, either format, for a 75 s video | under a minute | lossless parts, one final encode |
@@ -24,7 +25,9 @@ of the same narration with another face renders that face's turns only, and an e
 already rendered renders nothing.
 
 The example in `example/` (four turns, 19.5 s) took 82 s for the voices, 37 s for the plan, 18.3
-minutes for its four clips (54-61x real time) and 6 s per format to compose.
+minutes for its four clips (54-61x real time) and 6 s per format to compose. The one-presenter
+[wayland-asahi](../videos/wayland-asahi/) video (23 lines, 124.8 s) took 84 minutes for its six tutor
+clips, 71-86 s per plan, and about a minute to compose each of its two voices.
 
 ## Quality
 
@@ -34,8 +37,13 @@ a clip. Cuts land in the silence between turns, so a presenter's reset to their 
 start of a clip is hidden by the cut to the other.
 
 **Where it shows.** The clips are 640x640: sharp in the 16:9 bubble (380 px) and the 9:16 tiles
-(440 px), a little soft in a solo tile, which is an upscale. Hands do not move; a portrait with an arm in
-it keeps the arm frozen. The background holds still when the prompt asks for it, plain backgrounds best.
+(440 px), a little soft in a solo tile, which is an upscale. The tutor layout's 512x768 clips fill a
+667x1000 panel, a 1.3x upscale. Hands move only when the portrait shows them and the prompt asks: from a
+waist-up portrait with both hands in front of the chest, and a talk prompt for a calm face and
+presentation gestures, the presenter talks with open palms, points, counts on his fingers and rests his
+hands in the pauses, with well-formed hands in the frames we checked (one every two seconds of a 125 s
+video). A selfie with an arm reaching
+out keeps the arm frozen. The background holds still when the prompt asks for it, plain backgrounds best.
 
 **The voices.** VibeVoice sounds like a conversation, but it is a generative model, and takes vary:
 
@@ -52,7 +60,11 @@ Listen to every line before the GPU renders faces for it.
 Whisper missed entirely still gets times between its neighbours.
 
 **The plan.** Claude's cards are short and tied to the claims; its layouts follow the rules because the
-rules are checked. Its hook variants and cover are proposals for a person to choose from.
+rules are checked. Its hook variants and cover are proposals for a person to choose from. It plans from
+your descriptions of the shots and the words of the narration, not from the pictures: once it told the
+editor to keep "the typos" visible because a line joked about spelling, in a recording with no typo in
+it. Read its notes against the recording. It also miscounts now and then (a seven-word card twice in a
+row as six); that is what the repair run is for.
 
 ## Hardware and memory
 
@@ -76,6 +88,7 @@ rules are checked. Its hook variants and cover are proposals for a person to cho
 | An opening syllable peaked at -0.5 dBTP in the final file | AAC overshoot on a sharp onset after silence | the compose measures and limits only when needed |
 | A presenter's idle "listening" clip looked unnatural on a real face | InfiniteTalk driven by silence keeps the mouth moving | the 16:9 shows the speaker only; the 9:16's listener is a still |
 | The privacy check flagged a city's name that was not on screen | OCR read a window's title-bar buttons as the word | look at the frame before deciding; the check stays as it is |
+| The privacy check flagged an IPv4 address in the tutor layout | at 60% scale, OCR read a kernel version, "6.19.14-400", as "6.19.14.4" | the same: look at the frame; the check stays as it is |
 
 ## What it is not
 

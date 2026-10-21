@@ -104,6 +104,9 @@ export interface TalkOptions {
   loraStrength?: number;
   /** InfiniteTalk's audio guidance; 1 = off (one pass per step). */
   audioCfg?: number;
+  /** How strongly the speech features drive the clip (1 = as trained). 0.85 against 1 was hard to tell
+   *  apart in a test (2026-10-21): for a calmer face, the talk prompt does more. */
+  audioScale?: number;
   /** Keep the transformer on the GPU after sampling (the next segment starts at once). Offloading it
    *  sends it back to a CPU copy that is memory-mapped from the weights file, and with the weights on the
    *  Windows disk every reload re-reads 16 GB through WSL's 9p bridge (measured 7.5 min, 2026-10-20). */
@@ -144,7 +147,7 @@ export function infiniteTalk(o: TalkOptions): Workflow {
     w2v: { class_type: "Wav2VecModelLoader", inputs: { model: "wav2vec2-chinese-base_fp16.safetensors", base_precision: "fp16", load_device: "main_device" } },
     embeds: {
       class_type: "MultiTalkWav2VecEmbeds",
-      inputs: { wav2vec_model: ["w2v", 0], audio_1: ["audio", 0], normalize_loudness: true, num_frames: o.maxFrames, fps: 25, audio_scale: 1, audio_cfg_scale: o.audioCfg ?? 1, multi_audio_type: "para" },
+      inputs: { wav2vec_model: ["w2v", 0], audio_1: ["audio", 0], normalize_loudness: true, num_frames: o.maxFrames, fps: 25, audio_scale: o.audioScale ?? 1, audio_cfg_scale: o.audioCfg ?? 1, multi_audio_type: "para" },
     },
     talk: { class_type: "MultiTalkModelLoader", inputs: { model: "Wan2_1-InfiniteTalk-Single_fp8_e4m3fn_scaled_KJ.safetensors" } },
     lora: {

@@ -9,7 +9,12 @@
 //
 //   bun tools/avatar/talk.ts <narration dir> <out dir> [--size 640x640] [--steps 6] [--shift 11]
 //        [--seed 7] [--swap 8] [--attn sageattn] [--only 0,3] [--idle 0] [--tail 1.0]
-//        [--face <speaker>=<presenter>[,<presenter>...]] [--clips <dir>] [--reuse <old talk.json>] [--dry]
+//        [--face <speaker>=<presenter>[,<presenter>...]] [--clips <dir>] [--reuse <old talk.json>]
+//        [--audio-scale 1] [--group-gap <s>] [--dry]
+//
+// --group-gap: one presenter's consecutive turns whose silence between them is shorter than this
+// become ONE clip. A single presenter cut into a clip per line resets to the portrait's pose at every
+// cut; with the script's blocks ending on longer pauses (lines.ts --pause), each block is one take.
 //
 // Writes <out>/talk.json (what compose.ts and compose16.ts read), the clips (25 fps, near-lossless) in
 // <out>/clips or --clips, and <out>/audio/*.wav (the cut each clip was driven by).
@@ -17,13 +22,13 @@ import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFi
 import { createHash } from "node:crypto";
 import { join, resolve } from "node:path";
 import { alive, files, free, loadPresenters, OUTPUT, portraitFile, run, stage } from "./comfy.ts";
-import { pinnedSegments, segments } from "./lib.ts";
+import { groupTurns, pinnedSegments, segments } from "./lib.ts";
 import { encodePrompt, infiniteTalk } from "./workflows.ts";
 
 const args = process.argv.slice(2);
 const opt = (n: string, d: string) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : d; };
 const [narr, outArg] = args;
-if (!narr || !outArg || narr.startsWith("--")) { console.error("usage: talk.ts <narration dir> <out dir> [--size WxH] [--steps 6] [--shift 11] [--seed 7] [--swap 8] [--attn sageattn] [--only k,...] [--idle 0] [--face sp=presenter,...] [--clips dir] [--reuse old/talk.json] [--dry]"); process.exit(2); }
+if (!narr || !outArg || narr.startsWith("--")) { console.error("usage: talk.ts <narration dir> <out dir> [--size WxH] [--steps 6] [--shift 11] [--seed 7] [--swap 8] [--attn sageattn] [--only k,...] [--idle 0] [--tail 1.0] [--face sp=presenter,...] [--clips dir] [--reuse old/talk.json] [--audio-scale 1] [--group-gap s] [--dry]"); process.exit(2); }
 const out = resolve(outArg);
 // --clips <dir>: one clips folder shared by several editions, so a clip rendered for one (same face,
 // same audio, same settings: the same content-addressed name) is found by the others.
@@ -36,7 +41,10 @@ const voice = join(narr, "voice.wav");
 const probe = (f: string) => Number(Bun.spawnSync(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=nw=1:nk=1", f], { stdout: "pipe" }).stdout.toString());
 const total = +(probe(voice) + Number(opt("tail", "1.0"))).toFixed(3);
 const [W, H] = opt("size", "640x640").split("x").map(Number);
-const P = { model: "infinitetalk-single-fp8+lightx2v-r64", w: W, h: H, steps: Number(opt("steps", "6")), shift: Number(opt("shift", "11")), seed: Number(opt("seed", "7")) };
+// --audio-scale: how hard the speech drives the clip (1 = as trained; workflows.ts). Part of the cache
+// key only when it is not 1, so clips rendered before the option existed keep their names.
+const audioScale = Number(opt("audio-scale", "1"));
+const P = { model: "infinitetalk-single-fp8+lightx2v-r64", w: W, h: H, steps: Number(opt("steps", "6")), shift: Number(opt("shift", "11")), seed: Number(opt("seed", "7")), ...(audioScale !== 1 ? { audioScale } : {}) };
 // Blocks kept in system RAM and streamed to the GPU: 8 leaves a 24 GB card headroom (0 fills it).
 const swap = Number(opt("swap", "8")), attention = opt("attn", "sageattn") as "sdpa" | "sageattn";
 const only = new Set(opt("only", "").split(",").filter(Boolean).map(Number));
@@ -56,12 +64,17 @@ const faces = new Map<string, string[]>(opt("face", "").split(";").filter(Boolea
 const faceAt: string[] = [];
 { const nth = new Map<string, number>(); turns.forEach((t: any, k: number) => { const i = nth.get(t.speaker) ?? 0; nth.set(t.speaker, i + 1); const f = faces.get(t.speaker); faceAt[k] = f ? f[i % f.length] : t.speaker; }); }
 for (const f of new Set(faceAt)) if (!reg[f]) throw new Error(`no presenter "${f}" in the presenters registry (add it, or map the speaker with --face ${f}=<presenter>)`);
+// Clip units: each turn on its own, or with --group-gap a presenter's run of turns as one unit.
+const groupGap = Number(opt("group-gap", "0"));
+const { groups, units } = groupTurns(turns, groupGap);
+if (groupGap > 0) console.log(`${turns.length} turns in ${units.length} clips (--group-gap ${groupGap}): ${groups.map((g) => g.length > 1 ? `${g[0]}-${g[g.length - 1]}` : `${g[0]}`).join(" ")}`);
 // --reuse <old talk.json>: a turn whose speaker, face, words and speech length match the old render
 // keeps its old clip, and its segment keeps the old window around its speech (lib.pinnedSegments).
 // Re-voicing one presenter then re-renders only that presenter. The clip stays valid because lines.ts
 // levels each line to a fixed speech level and the embeds node normalises loudness: the speech the
 // model hears is the same, at the same offsets.
 const reuseFile = opt("reuse", "");
+if (reuseFile && groupGap > 0) throw new Error("--reuse and --group-gap together are not supported yet");
 const old = reuseFile ? JSON.parse(readFileSync(resolve(reuseFile), "utf8")) : null;
 const oldTurns = old ? JSON.parse(readFileSync(join(old.narration, "turns.json"), "utf8")) : [];
 const pins: Record<number, { lead: number; tail: number }> = {}, reused = new Map<number, string>();
@@ -78,13 +91,13 @@ if (old) {
   });
   console.log(`reusing ${reused.size} clips from ${reuseFile}: turns ${[...reused.keys()].join(",")}`);
 }
-const segs = old ? pinnedSegments(turns, total, pins) : segments(turns, total);
+const segs = (old ? pinnedSegments(turns, total, pins) : segments(units, total)).map((s) => ({ ...s, turn: groups[s.k][0], turns: groups[s.k] }));
 for (const s of segs) {
   if (only.size && !only.has(s.k)) continue;
   const wav = join(out, "audio", `seg${String(s.k).padStart(2, "0")}.wav`);
   // apad: the last segment runs past the voice into the tail.
   ff(["-i", voice, "-ss", s.start.toFixed(3), "-t", (s.end - s.start).toFixed(3), "-af", "apad", "-t", (s.end - s.start).toFixed(3), "-ac", "1", "-ar", "16000", wav]);
-  jobs.push({ name: `seg${String(s.k).padStart(2, "0")}-${s.speaker}`, speaker: s.speaker, face: faceAt[s.k], wav, seconds: +(s.end - s.start).toFixed(3), seed: P.seed + s.k, reuse: reused.get(s.k) });
+  jobs.push({ name: `seg${String(s.k).padStart(2, "0")}-${s.speaker}`, speaker: s.speaker, face: faceAt[s.turn], wav, seconds: +(s.end - s.start).toFixed(3), seed: P.seed + s.k, reuse: reused.get(s.k) });
 }
 // --idle 3.24 renders one idle loop per presenter (81 frames, one window, driven by silence) for
 // compose.ts --listener idle. Off by default: on a real person's face a silence-driven clip keeps the
@@ -94,7 +107,7 @@ if (idle > 0 && !only.size) {
   for (const sp of [...new Set(segs.map((s) => s.speaker))]) {
     const wav = join(out, "audio", `idle-${sp}.wav`);
     ff(["-f", "lavfi", "-i", "anullsrc=r=16000:cl=mono", "-t", String(idle), wav]);
-    jobs.push({ name: `idle-${sp}`, speaker: sp, face: faceAt[segs.find((s) => s.speaker === sp)!.k], wav, seconds: idle, seed: P.seed + 100 });
+    jobs.push({ name: `idle-${sp}`, speaker: sp, face: faceAt[segs.find((s) => s.speaker === sp)!.turn], wav, seconds: idle, seed: P.seed + 100 });
   }
 }
 

@@ -48,7 +48,7 @@ const RING = 8;
 const SOLO = 960, SOLO_X = 60, SOLO_Y = 300;          // one presenter, y 300-1260
 const END_Y = 470;                                    // end card text
 
-type Seg = { k: number; speaker: string; start: number; end: number };
+type Seg = { k: number; speaker: string; start: number; end: number; turn?: number; turns?: number[] };
 type Beat = { turn: number; layout: "split" | "solo" | "end" };
 type Card = { start: number; end: number; text: string };
 const talk = JSON.parse(readFileSync(TALK, "utf8"));
@@ -59,7 +59,13 @@ const turns = JSON.parse(readFileSync(join(talk.narration, "turns.json"), "utf8"
 const speakers: string[] = [...new Set(segs.map((s) => s.speaker))];
 if (speakers.length > 2) throw new Error("two presenters at most");
 const slot = (sp: string) => speakers.indexOf(sp);
-const layoutOf = (k: number) => sb.beats.find((b) => b.turn === k)?.layout ?? "split";
+// A clip can hold several turns (talk.ts --group-gap): its layout is its first turn's.
+const layoutOf = (k: number) => sb.beats.find((b) => b.turn === (segs.find((s) => s.k === k)?.turn ?? k))?.layout ?? "split";
+// One clip, one layout: a block whose turns were planned differently is refused (compose16.ts).
+for (const s of segs) {
+  const ls = (s.turns ?? [s.turn ?? s.k]).map((t) => sb.beats.find((b) => b.turn === t)?.layout ?? "split");
+  if (new Set(ls).size > 1) throw new Error(`clip ${s.k} holds turns ${s.turns!.join(",")}, planned as ${ls.join("/")}: one clip has one layout. Plan with storyboard.ts --group-gap (the same as talk.ts), or render the clips without it`);
+}
 // The face a turn was rendered with (talk.ts --face) decides its label and ring.
 const faceOf = (s: Seg) => talk.clips[`seg${String(s.k).padStart(2, "0")}-${s.speaker}`]?.face ?? s.speaker;
 // The listener shows the face of their most recent turn (their first, before they have spoken).

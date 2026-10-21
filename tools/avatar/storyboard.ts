@@ -5,10 +5,14 @@
 // Claude plans the edit. Given the brief's sourced claims, the narration's timed turns and the screen
 // recording's shots, one headless run (tools/llm/claude.ts: no tools, a JSON schema) picks a layout
 // for every turn, writes the on-screen cards and their times, proposes three hook variants for an A/B
-// test, and a cover. The answer is then checked here, rule by rule, before a compose may use it.
+// test, and a cover. The answer is then checked here, rule by rule, before a compose may use it; a
+// refused answer goes back once with the problems, and the reply is checked the same way.
 //
 //   bun tools/avatar/storyboard.ts --brief <brief.yaml> --narration <dir> --shots <shots.json>
-//        --out <storyboard.json> [--model opus] [--effort high] [--style <rules.md>]
+//        --out <storyboard.json> [--model opus] [--effort high] [--style <rules.md>] [--group-gap <s>]
+//
+// --group-gap: give it when talk.ts renders with it (one presenter, one clip per block of lines): every
+// turn of a block then gets one layout, as the compose requires.
 //   bun tools/avatar/storyboard.ts retime --brief ... --narration <new dir> --shots <new shots.json>
 //        --out <storyboard.json> --from <old storyboard.json> --old-shots <old shots.json>
 //        --old-narration <old dir> [--swap michael=noah]       the same plan on a re-voiced timeline
@@ -20,6 +24,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { runClaude } from "../llm/claude.ts";
 import { loadPresenters } from "./comfy.ts";
+import { groupTurns } from "./lib.ts";
 
 const args = process.argv.slice(2);
 const opt = (n: string, d?: string) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : d; };
@@ -39,6 +44,10 @@ const turns = JSON.parse(readFileSync(join(NARR, "turns.json"), "utf8")) as Arra
 const shots = JSON.parse(readFileSync(SHOTS, "utf8")) as { screen_end: number; total: number; shots: Array<{ start: number; end: number; what: string }> };
 const reg = loadPresenters();
 const speakers = [...new Set(turns.map((t) => t.speaker))];
+// --group-gap <s>, the same as talk.ts's: each block of one presenter's lines is one clip, and a clip has
+// one layout, so every turn of a block must get the same one.
+const blocks = groupTurns(turns, Number(opt("group-gap", "0"))).groups.filter((g) => g.length > 1);
+const span = (g: number[]) => `${g[0]}-${g[g.length - 1]}`;
 
 const STYLE = opt("style") ? readFileSync(resolve(opt("style")!), "utf8") : `- Plain words a person would say out loud. No hype ("revolutionary", "game-changing", "seamless", "unleash", "supercharge").
 - No dashes of any kind in a card, no exclamation marks, no emoji, no ending full stop.
@@ -69,10 +78,11 @@ AI-generated presenters (labelled as AI on screen) host it: ${speakers.map((s) =
 ## Layouts (one per turn)
 - "split": the recording plus the speaking presenter. Use it whenever the recording shows what the turn is about.
 - "solo": the speaking presenter large; the recording is hidden for that turn (it keeps running underneath). Use it only for a short reaction or punchline turn (under about 3 s of speech) where the recording would add nothing; at most three solo turns in the whole video, never the first turn (the first two seconds must show the product), never two in a row.
-- "end": the end card ("${endCard.title}"${endCard.subtitle ? `, "${endCard.subtitle}"` : ""}) with the speaker. Required for every turn that starts after the recording ends (${shots.screen_end.toFixed(2)} s); not allowed before it.
+- "end": the end card ("${endCard.title}"${endCard.subtitle ? `, "${endCard.subtitle}"` : ""}) with the speaker. Required for every turn that starts after the recording ends (${shots.screen_end.toFixed(2)} s); not allowed before it.${blocks.length ? `
+- Blocks: turns ${blocks.map(span).join(", ")} are each rendered as ONE continuous clip, and a clip has one layout. Give every turn of a block the same layout.` : ""}
 
 ## Cards
-A card is a line of text over the recording, shown from "start" to "end" seconds. Write at most six words and 32 characters per card. Every card states one of the sourced claims below and gives its index in "claim"; a card that cannot cite a claim does not exist. Cards may not overlap, must sit inside 0..${shots.screen_end.toFixed(2)} s, should each stay up at least 2.5 s, and should change when the recording changes subject. Cards are hidden during solo turns, so time them around those. The first card is the hook and starts at 0.
+A card is a line of text over the recording, shown from "start" to "end" seconds. Write at most six words and 32 characters per card, and count them: every space-separated word counts ("Mac mini" is two), and one card over the limit refuses the whole plan. Every card states one of the sourced claims below and gives its index in "claim"; a card that cannot cite a claim does not exist. Cards may not overlap, must sit inside 0..${shots.screen_end.toFixed(2)} s, should each stay up at least 2.5 s, and should change when the recording changes subject. Cards are hidden during solo turns, so time them around those. The first card is the hook and starts at 0.
 
 ## Hook variants
 Propose three alternative FIRST LINES for an A/B test of the opening, each spoken by ${turns[0].speaker} in under 20 words, each with a matching hook card (six words at most). They must stay true to the claims. Explain in "why" what each one tests.
@@ -108,6 +118,10 @@ function check(sb: any): { cards: any[]; problems: string[] } {
     if (l === "solo" && layoutOf(k - 1) === "solo") problems.push(`turns ${k - 1} and ${k} are both solo`);
   });
   if (layoutOf(0) !== "split") problems.push("the first turn must show the recording (split)");
+  for (const g of blocks) {
+    const ls = [...new Set(g.map(layoutOf))];
+    if (ls.length > 1) problems.push(`turns ${span(g)} are one clip but planned as ${ls.join("/")}: give them one layout`);
+  }
   if (sb.beats.filter((b: any) => b.layout === "solo").length > 3) problems.push("more than three solo turns");
   const cards = [...sb.cards].sort((a: any, b: any) => a.start - b.start);
   cards.forEach((c: any, i: number) => {
@@ -161,7 +175,17 @@ if (args[0] === "retime") {
 } else {
   const cwd = mkdtempSync(join(tmpdir(), "avatar-storyboard-"));
   const t0 = Date.now();
-  const r = await runClaude({ prompt, cwd, model: opt("model", "opus")!, maxTurns: 4, jsonSchema: SCHEMA, effort: opt("effort", "high") as any, timeoutMs: 15 * 60_000, logPath: join(cwd, "run.jsonl") });
+  const ask = (p: string, log: string) => runClaude({ prompt: p, cwd, model: opt("model", "opus")!, maxTurns: 4, jsonSchema: SCHEMA, effort: opt("effort", "high") as any, timeoutMs: 15 * 60_000, logPath: join(cwd, log) });
+  let r = await ask(prompt, "run.jsonl");
   if (r.kind !== "ok") throw new Error(`storyboard run: ${r.kind}: ${r.message}`);
-  finish(r.structured as any, { model: r.model, seconds: (Date.now() - t0) / 1000, turns: r.numTurns }, `${r.model} in ${((Date.now() - t0) / 1000).toFixed(0)} s`);
+  // One repair round. A model miscounts now and then (a seven-word card read as six), and a whole new
+  // plan for one long card would be a different plan, not a fix: the refused answer goes back with the
+  // check's own words, and the reply is checked exactly like the first. Still broken = refused.
+  const first = check(r.structured as any).problems;
+  if (first.length) {
+    console.log(`the check sent the plan back (${first.join("; ")}); one repair round`);
+    r = await ask(`${prompt}\n\n## Your first answer, which the check refused\n${JSON.stringify(r.structured)}\n\nThe check found:\n${first.map((p) => `- ${p}`).join("\n")}\n\nReturn the whole plan again with exactly these problems fixed, and everything else as it was.`, "repair.jsonl");
+    if (r.kind !== "ok") throw new Error(`storyboard repair run: ${r.kind}: ${r.message}`);
+  }
+  finish(r.structured as any, { model: r.model, seconds: (Date.now() - t0) / 1000, turns: r.numTurns, ...(first.length ? { repaired: first } : {}) }, `${r.model} in ${((Date.now() - t0) / 1000).toFixed(0)} s${first.length ? " (one repair round)" : ""}`);
 }

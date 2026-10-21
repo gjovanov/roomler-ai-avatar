@@ -1,0 +1,24 @@
+# The brief for videos/wayland-asahi: what the video may claim, each claim with a public source.
+product: Roomler
+about: one open-source product for remote desktop from any browser, a private WireGuard mesh between your machines, and team chat and video calls
+end_title: roomler.ai
+end_subtitle: Open source · self-hostable
+claims:
+  - claim: "An Apple M2 Pro Mac mini running Linux (Fedora Asahi Remix 42) on a Wayland desktop"
+    source: https://github.com/gjovanov/roomler-ai/blob/master/docs/fr/FR-112-software-encoding-at-60-fps.md (§2); the About window in the recording
+  - claim: "Controlled from a browser tab, with nothing to install on the controlling side"
+    source: https://github.com/gjovanov/roomler-ai#readme
+  - claim: "56 frames a second in this demo, every frame encoded in software"
+    source: FR-112 (0.4.142, 56.2 fps of VP9 4:4:4 in software); the viewer's own fps counter in the drag shot
+  - claim: "The earlier build managed 27 frames a second on the same Mac"
+    source: FR-112 §2 (0.4.141, 27.0 fps)
+  - claim: "Linux ran the encoder on an efficiency core at a low clock; Roomler now asks the scheduler for performance while encoding"
+    source: FR-112 §2, "The clock" (the energy-aware scheduler, schedutil over apple-cpufreq)
+  - claim: "Typing in a text editor feels local (the presenter's impression)"
+    source: the typing shot in the recording
+  - claim: "In this setup Roomler reads the screen only while the user's session is on screen and unlocked"
+    source: https://github.com/gjovanov/roomler-ai/blob/master/docs/wayland.md (system installs)
+  - claim: "A banner shows who is connected, with a Disconnect button for the person at the machine"
+    source: docs/wayland.md; the banner shot in the recording
+  - claim: "Roomler is open source and self-hostable"
+    source: https://github.com/gjovanov/roomler-ai

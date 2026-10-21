@@ -1,5 +1,5 @@
 {
-  "_note": "The presenters. michael and emma are invented people: each face was generated from the text prompt below with Z-Image-Turbo (Apache-2.0), not from a photo of anyone, and a resemblance to a real person is unintended. Their voices are the michael and emma prompts of starling's podcast-server (Kokoro-82M samples, Apache-2.0). A real person's entry needs \"real_person\": true, their recorded consent, and \"portrait\": \"private:<file>\" so the face stays out of the repository (docs/real-person.md). Every video that shows a presenter carries the AI label from the first frame.",
+  "_note": "The presenters. michael and emma are invented people: each face was generated from the text prompt below with Z-Image-Turbo (Apache-2.0), not from a photo of anyone, and a resemblance to a real person is unintended. Their voices are the michael and emma prompts of starling's podcast-server (Kokoro-82M samples, Apache-2.0). goran, goran-classic, goran-warm and goran-tutor are Goran Jovanov, the maintainer, with his consent to publish them (2026-10-21); his voice prompts are not in this repository. A real person's entry needs \"real_person\": true and their recorded consent, and, unless they agreed to publish their face, \"portrait\": \"private:<file>\" so it stays out of the repository (docs/real-person.md). Every video that shows a presenter carries the AI label from the first frame.",
   "michael": {
     "label": "Michael",
     "ai_label": "AI presenter",
@@ -21,5 +21,52 @@
     "portrait_seed": 12,
     "portrait_prompt": "Photograph of a friendly British woman in her early thirties, the co-host of a tech video podcast, sitting in a calm studio and looking straight into the camera with a relaxed, slight closed-mouth smile. Shoulder-length wavy auburn hair, green eyes, light freckles, a soft cream knit sweater. Head and shoulders, centred, eye level, room above her head. Behind her a dark teal wall with softly blurred bookshelves and a warm desk lamp. Soft key light from the front right, a subtle rim light, natural skin texture with visible pores, shot on a 50mm lens at f/2.8, sharp focus on the eyes, realistic colour, no text, no logo.",
     "talk_prompt": "A woman is talking to the camera on a video podcast. She speaks clearly and with warmth and humour, with natural head movements, expressive eyebrows, blinks and small nods, relaxed shoulders. Static camera, soft studio lighting, the background stays still."
+  },
+  "goran": {
+    "label": "Goran",
+    "ai_label": "AI avatar",
+    "real_person": true,
+    "consent": "Goran Jovanov (the maintainer), 2026-10-21: his own avatars may be public (\"the new avatars from me (its fine to be public)\"). His voice prompts (goran, goran3) stay private and are not in this repository.",
+    "voice": "goran3",
+    "ring": "#4db6ac",
+    "portrait": "goran.png",
+    "portrait_model": "Qwen-Image-Edit-2511 + lightx2v Lightning (4 steps, cfg 1), his own selfie as the reference, keeping its framing (portrait.ts edit --keep-framing), cropped 760x760",
+    "portrait_prompt": "Replace the library background with a calm podcast studio: a dark teal wall with soft acoustic panels, a warm desk lamp and a small plant, softly out of focus. Keep the man exactly as he is: his face, his expression, his pose, his outstretched arm and his navy jacket stay unchanged. Natural light on him that matches the new room. A realistic photograph.",
+    "talk_prompt": "A man is talking to the camera on a video podcast. He speaks clearly and with energy, with natural head movements, raised eyebrows on his key words, blinks and small nods, relaxed shoulders. Static camera, soft studio lighting, the background stays still."
+  },
+  "goran-classic": {
+    "label": "Goran",
+    "ai_label": "AI avatar",
+    "real_person": true,
+    "consent": "Goran Jovanov (the maintainer), 2026-10-21: his own avatars may be public (\"the new avatars from me (its fine to be public)\"). His voice prompts (goran, goran3) stay private and are not in this repository.",
+    "voice": "goran3",
+    "ring": "#4db6ac",
+    "portrait": "goran-classic.png",
+    "portrait_source": "his own photo in a library, used as it is, cropped 900x900",
+    "talk_prompt": "A man is talking to the camera in a selfie video. He speaks clearly and with energy, with natural head movements, raised eyebrows on his key words, blinks and small nods. The camera stays still and the library behind him stays still."
+  },
+  "goran-warm": {
+    "label": "Goran",
+    "ai_label": "AI avatar",
+    "real_person": true,
+    "consent": "Goran Jovanov (the maintainer), 2026-10-21: his own avatars may be public (\"the new avatars from me (its fine to be public)\"). His voice prompts (goran, goran3) stay private and are not in this repository.",
+    "voice": "goran3",
+    "ring": "#4db6ac",
+    "portrait": "goran-warm.png",
+    "portrait_source": "his own photo in a warmly lit library, used as it is, cropped 900x900",
+    "talk_prompt": "A man is talking to the camera in a selfie video. He speaks clearly and with energy, with natural head movements, raised eyebrows on his key words, blinks and small nods. The camera stays still and the library behind him stays still."
+  },
+  "goran-tutor": {
+    "label": "Goran",
+    "ai_label": "AI avatar",
+    "real_person": true,
+    "consent": "Goran Jovanov (the maintainer), 2026-10-21: his own avatars may be public (\"the new avatars from me (its fine to be public)\"). His voice prompts (goran, goran3) stay private and are not in this repository.",
+    "voice": "goran3",
+    "ring": "#4db6ac",
+    "portrait": "goran-tutor.png",
+    "portrait_model": "Qwen-Image-Edit-2511 + lightx2v Lightning (4 steps, cfg 1), 832x1248, from his own library photo (portrait.ts edit --wh 832x1248)",
+    "portrait_prompt": "A waist-up photograph of this same man standing and presenting to the camera like a teacher explaining a demo. He faces the camera, both hands visible in front of his chest, one hand open in a calm explaining gesture. A relaxed neutral expression, mouth closed, eyes open normally, looking into the lens. Keep his face, his hair and his identity exactly as in the photo, and his navy polo shirt. Behind him a plain dark teal studio backdrop, softly out of focus. Soft, even light. A realistic photograph, natural skin.",
+    "talk_prompt": "A man is presenting calmly to the camera, like a teacher explaining a demo. Relaxed, neutral face and a steady gaze into the lens, very little head movement; only the mouth moves with the words. His hands do the talking: clear presentation gestures with open palms, pointing and counting on his fingers, at chest height. The camera and the background stay still.",
+    "portrait_seed": 22
   }
 }
