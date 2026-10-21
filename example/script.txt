@@ -1,0 +1,6 @@
+# One turn per line, "speaker: text". A speaker is a voice the engine has (tools/voice/render.sh voices).
+# Short lines render best; a line under about six words can sound rushed (see docs/expectations.md).
+michael: This desktop is in another city, and I'm driving it from a browser tab.
+emma: Nothing to install on this side?
+michael: Nothing. The picture is encrypted from that machine to this tab, and the server never sees it.
+emma: That's Roomler. And it's open source.

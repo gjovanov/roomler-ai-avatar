@@ -1,0 +1,5 @@
+ComfyUI a2440bc77cba0bee44b00cee40e9997bb18eb850
+ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper 088128b224242e110d3906c6750e9a3a348a659b
+ComfyUI/custom_nodes/ComfyUI-KJNodes f20bdd5337ace70abbec147bdb68ea345d340836
+ComfyUI/custom_nodes/ComfyUI-VideoHelperSuite 4d907bee61e92c2e65af3bd6383a4e4d356126d1
+torch 2.14.1+cu130

@@ -1,0 +1,25 @@
+{
+  "_note": "The presenters. michael and emma are invented people: each face was generated from the text prompt below with Z-Image-Turbo (Apache-2.0), not from a photo of anyone, and a resemblance to a real person is unintended. Their voices are the michael and emma prompts of starling's podcast-server (Kokoro-82M samples, Apache-2.0). A real person's entry needs \"real_person\": true, their recorded consent, and \"portrait\": \"private:<file>\" so the face stays out of the repository (docs/real-person.md). Every video that shows a presenter carries the AI label from the first frame.",
+  "michael": {
+    "label": "Michael",
+    "ai_label": "AI presenter",
+    "voice": "michael",
+    "ring": "#4db6ac",
+    "portrait": "michael.png",
+    "portrait_model": "Z-Image-Turbo bf16 (Comfy-Org/z_image_turbo), 1024x1024, 9 steps, cfg 1, res_multistep/simple, shift 3",
+    "portrait_seed": 12,
+    "portrait_prompt": "Photograph of a friendly American man in his late thirties, the host of a tech video podcast, sitting in a calm studio and looking straight into the camera with a relaxed, slight closed-mouth smile. Short brown hair, light stubble, warm brown eyes, a plain charcoal t-shirt. Head and shoulders, centred, eye level, room above his head. Behind him a dark teal wall with softly blurred bookshelves and a warm desk lamp. Soft key light from the front left, a subtle rim light, natural skin texture with visible pores, shot on a 50mm lens at f/2.8, sharp focus on the eyes, realistic colour, no text, no logo.",
+    "talk_prompt": "A man is talking to the camera on a video podcast. He speaks clearly and with energy, with natural head movements, raised eyebrows on his key words, blinks and small nods, relaxed shoulders. Static camera, soft studio lighting, the background stays still."
+  },
+  "emma": {
+    "label": "Emma",
+    "ai_label": "AI presenter",
+    "voice": "emma",
+    "ring": "#ffc107",
+    "portrait": "emma.png",
+    "portrait_model": "Z-Image-Turbo bf16 (Comfy-Org/z_image_turbo), 1024x1024, 9 steps, cfg 1, res_multistep/simple, shift 3",
+    "portrait_seed": 12,
+    "portrait_prompt": "Photograph of a friendly British woman in her early thirties, the co-host of a tech video podcast, sitting in a calm studio and looking straight into the camera with a relaxed, slight closed-mouth smile. Shoulder-length wavy auburn hair, green eyes, light freckles, a soft cream knit sweater. Head and shoulders, centred, eye level, room above her head. Behind her a dark teal wall with softly blurred bookshelves and a warm desk lamp. Soft key light from the front right, a subtle rim light, natural skin texture with visible pores, shot on a 50mm lens at f/2.8, sharp focus on the eyes, realistic colour, no text, no logo.",
+    "talk_prompt": "A woman is talking to the camera on a video podcast. She speaks clearly and with warmth and humour, with natural head movements, expressive eyebrows, blinks and small nods, relaxed shoulders. Static camera, soft studio lighting, the background stays still."
+  }
+}

@@ -1,0 +1,14 @@
+# The brief: what the video is about and what it may claim. storyboard.ts reads the single-line fields
+# and every "- claim:" line; each card on screen must cite one of these claims, so a claim you cannot
+# source does not belong here.
+product: Roomler
+about: one open-source product for remote desktop from any browser, a private WireGuard mesh between your machines, and team chat and video calls
+end_title: roomler.ai
+end_subtitle: Open source · self-hostable
+claims:
+  - claim: "The controlling side needs only a web browser: nothing to install"
+    source: https://github.com/gjovanov/roomler-ai#readme
+  - claim: "Screen and input are encrypted end to end; the server coordinates and never sees them"
+    source: https://github.com/gjovanov/roomler-ai#readme
+  - claim: "Roomler is open source and can be self-hosted"
+    source: https://github.com/gjovanov/roomler-ai

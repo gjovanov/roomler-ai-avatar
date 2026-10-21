@@ -1,0 +1,18 @@
+roomler-ai-avatar
+Copyright (C) 2026 G ROX EOOD
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+It is part of the Roomler project: https://roomler.ai, https://github.com/gjovanov/roomler-ai
+
+The tools drive other software and models, none of which is included here. Each keeps its own
+licence; docs/models.md lists them with their sources:
+
+  ComfyUI (GPL-3.0), ComfyUI-WanVideoWrapper (Apache-2.0), ComfyUI-KJNodes (GPL-3.0),
+  ComfyUI-VideoHelperSuite (GPL-3.0): run as a separate program, not linked.
+  InfiniteTalk (Apache-2.0), Wan2.1-I2V-14B-480P (Apache-2.0), lightx2v LoRAs (Apache-2.0),
+  Z-Image-Turbo (Apache-2.0), Qwen-Image-Edit-2511 (Apache-2.0), chinese-wav2vec2-base (MIT),
+  VibeVoice-1.5B (MIT, with Microsoft's research-use statement), Kokoro-82M (Apache-2.0),
+  Whisper (MIT), Claude (Anthropic's terms, through Claude Code).
+
+presenters/michael.png and presenters/emma.png were generated with Z-Image-Turbo from the text
+prompts in presenters/presenters.json. They show invented people.

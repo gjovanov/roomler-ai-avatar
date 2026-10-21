@@ -1,0 +1,17 @@
+# Media and work folders: renders, narrations and recordings never belong in the repository.
+*.mp4
+*.mov
+*.mkv
+*.webm
+*.wav
+*.mp3
+*.m4a
+*.aac
+out/
+example/out/
+compose-9x16/
+compose-16x9/
+node_modules/
+.DS_Store
+# A real person's face and voice live outside the repository (AVATAR_PRIVATE, AVATAR_VOICES_DIR).
+private/
