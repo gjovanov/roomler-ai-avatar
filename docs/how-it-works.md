@@ -62,18 +62,12 @@ run: VibeVoice occasionally mumbles a take, and a mumbled take costs GPU minutes
 
 ## Segments: every cut lands in silence
 
-```mermaid
-gantt
-  dateFormat X
-  axisFormat %s
-  section speech
-  michael turn 0 :0, 5
-  emma turn 1    :6, 8
-  michael turn 2 :9, 14
-  section clips
-  clip 0 (michael) :0, 5.5
-  clip 1 (emma)    :5.5, 8.5
-  clip 2 (michael) :8.5, 15
+```text
+seconds   0         5    6    8    9              14   15
+speech    [michael 0 ]    [emma]    [ michael 2     ]
+clips     [ clip 0     ][ clip 1 ][ clip 2            ]
+                       ^5.5      ^8.5
+                 each cut in the middle of a silence
 ```
 
 `talk.ts` cuts the narration into one segment per turn, from the middle of the silence before the turn
