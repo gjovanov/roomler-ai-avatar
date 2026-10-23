@@ -146,8 +146,15 @@ puts the title and subtitle above the speaker's bubble.
 **16:9, tutor** (`--layout tutor`). A presenter who gestures needs room for the hands, and a bubble
 crops them away. Here the recording sits on the left at 1152x648 (60% of the width), the cards above it
 and the captions below it, and the presenter fills a tall panel on the right, 1000 px high, for the
-whole video, like a teacher beside a screen. The recording stays up through solo turns; the end card
-takes its place at the end.
+whole video, like a teacher beside a screen. A solo turn hides the recording and shows its card large
+in that place, as a chapter title; the end card takes its place at the end.
+
+**A demo that owns the frame** (both 16:9 layouts). A `screen` turn shows the recording full frame with
+no presenter at all, and its clip is never rendered, so the important moments of a demo play
+undisturbed and the presenters come back between them. The storyboard can set each face's label
+(`labels`, where an empty one draws none: disclose on the platform instead) and the chip that says what
+the recording area shows (`chip`, per beat or for the whole video): "Real screen recording" by default,
+and empty for a beat whose picture is a diagram or a still, which is not one.
 
 ```text
 +--------------------------------------+---------------+
@@ -166,8 +173,9 @@ below it, and the two presenters as video-call tiles below those. The speaker's 
 the listener's is dimmed. The listener is a still of their portrait by default: an idle clip,
 InfiniteTalk driven by silence, keeps the mouth busy anyway and looks wrong on a real face.
 
-In both, a card shows only over the recording (never over a solo or end turn), and the captions show
-up to three words a page, the word being said in its speaker's colour.
+In both, a card shows over the recording (in the tutor layout a solo turn shows it large, as a title;
+never over an end turn), and the captions show up to three words a page, the word being said in its
+speaker's colour.
 
 ## Captions
 
