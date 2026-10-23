@@ -95,6 +95,19 @@ function ff(a: string[], label: string) {
 const txt = (name: string, s: string) => { writeFileSync(join(WORK, name), s); return name; };
 const draw = (file: string, size: number, color: string, x: string | number, y: string | number, box = "") =>
   `drawtext=${FONT}:textfile='${file}':fontsize=${size}:fontcolor=${color}${box}:x=${x}:y=${y}`;
+/** The largest font size up to `size` at which the text in `file` is at most `maxW` px wide. Measured,
+ *  not estimated: the text is drawn once at 100 px and cropdetect reads its width. A title longer than
+ *  the space it is centred in then shrinks, instead of running off the frame and under the presenter. */
+function fitSize(file: string, size: number, maxW: number): number {
+  const r = Bun.spawnSync(["ffmpeg", "-hide_banner", "-f", "lavfi", "-i", "color=c=black:s=8000x300:d=1:r=5", "-vf",
+    `drawtext=${FONT}:textfile='${file}':fontsize=100:fontcolor=white:x=20:y=60,cropdetect=limit=24:round=1:skip=0:reset=0`, "-f", "null", "-"],
+    { cwd: WORK, stdout: "pipe", stderr: "pipe" });
+  const m = [...r.stderr.toString().matchAll(/crop=(\d+):\d+:\d+:\d+/g)].pop();
+  if (!m) throw new Error(`could not measure the text in ${file}:\n${r.stderr.toString().slice(-800)}`);
+  return Math.min(size, Math.floor((100 * maxW) / Number(m[1])));
+}
+// The width a centred title may take: the recording's area in tutor (the presenter is beside it), else the frame.
+const TITLE_W = LAYOUT === "tutor" ? SCR_W - 48 : W - 160;
 const LABEL_BOX = ":box=1:boxcolor=0x1A1A2E@0.85:boxborderw=10";
 const label = (face: string) => sb.labels?.[face] ?? `${reg[face].label} · ${reg[face].ai_label ?? "AI presenter"}`;
 
@@ -146,8 +159,8 @@ for (const s of segs) {
     ov("[scr]", SCR_X, SCR_Y);
   }
   if (layout === "end") {
-    tx(draw(txt(`end1-${s.k}.txt`, sb.end_card?.title ?? ""), 130, "0xE6F5F2", `${G.endX}-text_w/2`, G.endY));
-    if (sb.end_card?.subtitle) tx(draw(txt(`end2-${s.k}.txt`, sb.end_card.subtitle), 50, "0x80CBC4", `${G.endX}-text_w/2`, G.endY + 190));
+    if (sb.end_card?.title) { const f = txt(`end1-${s.k}.txt`, sb.end_card.title); tx(draw(f, fitSize(f, 130, TITLE_W), "0xE6F5F2", `${G.endX}-text_w/2`, G.endY)); }
+    if (sb.end_card?.subtitle) { const f = txt(`end2-${s.k}.txt`, sb.end_card.subtitle); tx(draw(f, fitSize(f, 50, TITLE_W), "0x80CBC4", `${G.endX}-text_w/2`, G.endY + 190)); }
   }
   if (showP) {
     // The talking clip is 25 fps and can end a frame or two short of its audio: hold its last frame.
@@ -200,7 +213,7 @@ const cards = sb.cards.flatMap((cd, i) => {
   return [
     `${draw(f, 46, "0xE6F5F2", G.cardX, G.cardY, CARD_BOX)}:enable='${on}*${inSplit}'`,
     `${draw(f, 46, "0xE6F5F2", 48, 40, CARD_BOX)}:enable='${on}*${inScreen}'`,
-    ...(LAYOUT === "tutor" ? [`${draw(f, 88, "0xE6F5F2", `${SCR_X + SCR_W / 2}-text_w/2`, 400)}:enable='${on}*${inSolo}'`] : []),
+    ...(LAYOUT === "tutor" && inSolo !== "0" ? [`${draw(f, fitSize(f, 88, TITLE_W), "0xE6F5F2", `${SCR_X + SCR_W / 2}-text_w/2`, 400)}:enable='${on}*${inSolo}'`] : []),
   ];
 });
 ff(["-i", "picture.mp4", "-i", MIX, "-vf", [...cards, "subtitles=karaoke.ass", "format=yuv420p"].join(","), "-map", "0:v", "-map", "1:a",

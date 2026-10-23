@@ -147,7 +147,9 @@ puts the title and subtitle above the speaker's bubble.
 crops them away. Here the recording sits on the left at 1152x648 (60% of the width), the cards above it
 and the captions below it, and the presenter fills a tall panel on the right, 1000 px high, for the
 whole video, like a teacher beside a screen. A solo turn hides the recording and shows its card large
-in that place, as a chapter title; the end card takes its place at the end.
+in that place, as a chapter title; the end card takes its place at the end. A title longer than that
+space is drawn smaller until it fits: its width is measured, not guessed from its length, so "Make
+your own avatar" no longer runs under the presenter.
 
 **A demo that owns the frame** (both 16:9 layouts). A `screen` turn shows the recording full frame with
 no presenter at all, and its clip is never rendered, so the important moments of a demo play
