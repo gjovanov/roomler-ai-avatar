@@ -1,0 +1,34 @@
+# The brief for videos/avatar-making-of: what the video may claim, each claim with its source.
+product: roomler-ai-avatar
+about: AI presenters beside a real screen recording, made on your own GPU with open-weights models
+end_title: Make your own avatar
+end_subtitle: github.com/gjovanov/roomler-ai-avatar
+claims:
+  - claim: "The presenter of the previous video (videos/wayland-asahi) was an AI avatar of Goran, in his cloned voice"
+    source: videos/README.md; the video's own AI label and description (https://youtu.be/q1Fgc3nM3W4)
+  - claim: "Made on one laptop, with open-source tools"
+    source: README.md "Requirements" (tested on an RTX 5090 Laptop GPU, the laptop that rendered both videos) and "What it does" (the open-weights models)
+  - claim: "A script in plain text, one sentence per line, with notes for the shots"
+    source: script.txt in this folder; tools/voice/lines.ts (the form it reads)
+  - claim: "VibeVoice copies a voice from a short recording (his is about thirty seconds)"
+    source: docs/real-person.md (a short voice prompt of the person reading); his own prompt is about thirty seconds
+  - claim: "Every line is voiced on its own and Whisper checks the words"
+    source: tools/voice/lines.ts (one clip per line; a line below the heard threshold is refused)
+  - claim: "\"That's Roomler.\" alone came out as silence, then as \"Zaudin Ma\"; glued to the next sentence it passes"
+    source: the narration logs of videos/wayland-asahi (v2 line 44); the terminal shot in this video (only 0% heard, then heard 1.00 with --seed 52)
+  - claim: "InfiniteTalk animates his own photos, in ComfyUI, on the laptop's GPU"
+    source: docs/how-it-works.md; tools/avatar/talk.ts
+  - claim: "Retouching the face gave him a face that wasn't his"
+    source: Goran's own trials while making his avatars (a smoothed portrait no longer looked like him)
+  - claim: "A closer framing made the mouth move like his; a far one looked like a stranger"
+    source: the side-by-side in this video (the same photo framed wide and close)
+  - claim: "About forty seconds of GPU time per second of video; the previous video took about an hour"
+    source: the render log in this video (37-48x real time; four clips of videos/wayland-asahi in 50 min)
+  - claim: "The demo footage is never AI: real screen recordings at real speed, private parts boxed and checked by OCR"
+    source: tools/check.ts (OCR against a deny list); the region check in this video
+  - claim: "FFmpeg puts the screen, the avatar, the captions and the music together"
+    source: tools/avatar/compose16.ts
+  - claim: "Every video like this carries an AI label on every platform"
+    source: the YouTube label shown in this video; the posts' disclosures
+  - claim: "For techies whose main focus is building software products, how-to videos, demos and other content that promotes them are now easy to make"
+    source: Goran's own line (his view, added on review)

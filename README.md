@@ -15,6 +15,11 @@ presenters are hosts and the real recording is the proof.
   <i>The example's two formats. The test pattern stands in for your screen recording.</i>
 </p>
 
+<p align="center">
+  <a href="https://youtu.be/eTX3KQ3Ogys"><img src="docs/assets/making-of.jpg" alt="Video thumbnail: 'That wasn't me: my AI avatar, made on one laptop'. Goran's photo beside a frame of the AI avatar InfiniteTalk made of it, with a play button" width="560"></a><br>
+  <i><a href="https://youtu.be/eTX3KQ3Ogys">How these videos are made</a> (3 min, YouTube), presented by two AI avatars of Goran in his cloned voice. Its script is in <a href="videos/avatar-making-of/"><code>videos/avatar-making-of/</code></a>.</i>
+</p>
+
 ```mermaid
 flowchart LR
   script["script.txt<br/>one or two presenters, one line per turn"] --> voice["VibeVoice<br/>one line at a time"]

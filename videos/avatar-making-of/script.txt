@@ -1,0 +1,44 @@
+# How I made an AI version of myself (2026-10-24). Goran presents, in his own cloned voice (goran3),
+# with his two avatars: A (standing at home, navy jacket) and B (seated in a library, navy jacket).
+# Written for him in the style of his Wayland script and approved ahead ("auto-approve it"); the line
+# "For techies like me, ..." is his own, added on review (only a typo fixed).
+# Lines starting with # are the shots, not spoken. Each block ends on a longer pause (lines.ts --pause)
+# and talk.ts --group-gap renders each block as one continuous clip. Numbers are spelled out for the voice.
+#
+# [My last video, full screen: the avatar beside the Mac mini demo.]
+goran3: Quick confession. The guy presenting my last video? That wasn't me.
+goran3: It's my face, my voice and my words. But I never stood in front of a camera.
+# [The repo on GitHub, beside the presenter (A).]
+goran3: It's an AI avatar, made on one laptop, with open-source tools.
+goran3: Everything is in a public repo, so you can make your own. Ideally a better-looking one.
+# [The pipeline, full screen.]
+goran3: The whole thing is a pipeline: a script, a voice, a face, a screen recording, and then everything glued together.
+# [A terminal, beside the presenter (B): the script, then a line being voiced and checked.]
+goran3: It starts with a script. Plain text, one sentence per line, with notes for the shots.
+goran3: Then the voice. I recorded thirty seconds of myself talking, and VibeVoice copies how I sound.
+goran3: Every line is voiced on its own, and then Whisper listens back to make sure it says the right words.
+goran3: Short lines are the hardest. "That's Roomler" came out as silence. Then as "Zaudin Ma".
+goran3: So now it's glued to the next sentence.
+# [My photo next to the avatar, full screen.]
+goran3: Then the face. InfiniteTalk animates my own photos, in ComfyUI, on the laptop's GPU.
+goran3: Rule number one: no retouching. I tried it once, and the AI gave me someone else's face.
+# [Too far versus closer, beside the presenter (A).]
+goran3: My first avatar looked like my younger, thinner cousin. And the teeth were... creative.
+goran3: The fix wasn't a better model. It was a closer camera.
+goran3: When my face fills the frame, the mouth moves like mine. From too far away, it's a stranger with my haircut.
+# [The render log, full screen.]
+goran3: Rendering is the slow part. About forty seconds of GPU time for every second of me talking.
+goran3: My last video took about an hour.
+# [The privacy check, beside the presenter (B).]
+goran3: The demo itself is never AI. Those are real screen recordings, at real speed.
+goran3: A script drives the browser, anything private gets a solid box, and then OCR checks that nothing leaks.
+# [Putting it together, full screen.]
+goran3: Finally, FFmpeg puts it all together: the screen, the avatar, the captions and the music.
+goran3: And when the demo matters, the avatar steps aside. Like right now.
+# [The AI label on YouTube, beside the presenter (A).]
+goran3: One more thing. Every video like this gets an AI label, on every platform.
+# [End card: the repo. The presenter (B).]
+goran3: So, that's how it's done, and all of it is open source.
+goran3: For techies like me, whose main focus is building valuable software products, now you can easily create how-to videos, demos and other types of content that promote them.
+goran3: The link is below. Make your own avatar, and tell me if it looks more like you than mine looks like me.
+goran3: Talk to you soon.
