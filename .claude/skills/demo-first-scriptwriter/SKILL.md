@@ -30,8 +30,9 @@ Use these defaults only where the user has not specified otherwise:
 - Aim for roughly 90-120 seconds, with approximately 180-250 spoken words and room
   for visible interaction. Treat this as a drafting budget, not a timing guarantee.
 - Preserve the user's language and presenter name; otherwise use **Presenter:**.
-  For Roomler, use **goran:** only when Goran presents (his cloned voice is `goran3`);
-  michael and emma host otherwise.
+  For Roomler, use **goran:** only when Goran presents (his cloned voice is `goran3f`,
+  the pace he chose on 2026-10-25, about 180 words a minute; the videos before it used
+  `goran3`); michael and emma host otherwise.
 - Deliver one strong script with lightweight action cues, not a menu of alternatives.
 
 Proceed with reasonable editorial assumptions. Ask only when an essential fact
