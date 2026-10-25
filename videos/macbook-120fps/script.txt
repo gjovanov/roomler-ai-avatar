@@ -1,0 +1,36 @@
+# 120 fps on a MacBook, from a browser tab (2026-10-24): the answer to the Wayland/Asahi video, presented by
+# Goran's two avatars, A (standing at home, navy jacket) and B (seated in a library, navy jacket), in his
+# own cloned voice (goran3). Drafted for him while he was out, then rewritten by him the same day (only
+# typos fixed: "lets", "with with", "MacOS", "cools", "definitively"; "Try it." joined to the line before,
+# because a line that short comes out of the voice model as silence).
+# The demo: the same day's takes on his MacBook (macOS, Roomler 0.4.163) from a browser tab, at 120 fps;
+# the "work on it" shot is his own full-screen recording of 2026-10-13 (window drags and typing, an
+# earlier session: no frame rate is shown or claimed over it).
+# Lines starting with # are the shots, not spoken. Each block ends on a longer pause (lines.ts --pause) and
+# talk.ts --group-gap renders each block as one continuous clip. Numbers are spelled out for the voice.
+#
+# [My last video, as an inset: the Mac mini on Asahi at 56 fps.]
+goran3: My last video showed a Mac mini running Linux, at fifty-six frames a second, software encoded.
+goran3: Because of Asahi's missing driver for Mac's hardware. Now let's try a MacBook with macOS.
+# [The MacBook in the browser tab, beside the presenter (A); the fps counter, enlarged.]
+goran3: Roomler this time, on the same browser tab, shows a hundred and twenty frames per second.
+# [Full screen: a 120 fps test video while I throw its window around; the counter, enlarged.]
+goran3: That counter up top is the browser, counting the frames it decodes. Pretty cool, isn't it?
+# [The budget, beside the presenter (B): encode time per frame against 8.3 ms.]
+goran3: So how does the Mac do it?
+goran3: VideoToolbox encodes a full frame in about six milliseconds. At a hundred and twenty frames a second, each frame gets eight.
+goran3: The Intel and Nvidia encoders we measured needed ten to twelve. They simply fall behind.
+# [Full screen: his recording, full screen in the tab: fast window drags, then typing in TextEdit.]
+goran3: And you can work on it, not just watch it. Typing feels like working with a local desktop.
+# [The MacBook again, beside the presenter (A); the counter, enlarged.]
+goran3: One honest note. The video you're watching runs at thirty frames a second, so you can't actually see a hundred and twenty here.
+goran3: You'll have to trust the counter and the Mac itself.
+# [Full screen: a terminal reading the Mac's own log, frames sent per two seconds.]
+goran3: Every two seconds, the Mac writes down how many frames it sent. About a hundred and twenty, over and over.
+# [The tab again, the codec and path enlarged, beside the presenter (B).]
+goran3: The stream goes straight from the MacBook to the browser, peer to peer, and the browser decodes it on its own GPU.
+goran3: No plugin. Nothing to install on this side.
+# [End card. The presenter (B).]
+goran3: GPU encoding of the screen definitely makes the difference.
+goran3: Now you can access your home MacBook from your office and working with its remote screen will feel local. Try it.
+goran3: Talk to you soon.

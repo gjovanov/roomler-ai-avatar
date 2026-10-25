@@ -1,0 +1,44 @@
+# The brief for videos/mesh-network: what the video may claim, each claim with its source.
+product: Roomler
+about: one open-source product for remote desktop from any browser, a private WireGuard mesh between your machines, and team chat and video calls
+end_title: roomler.ai
+end_subtitle: Open source · self-hostable
+presenters:
+  - "A = goran-home-polo (presenters/): his photo at home with its navy jacket edited to a white polo shirt (Qwen-Image-Edit-2511 --keep-framing, clothes only), his ORIGINAL head pasted back (head-paste.ts, cut at the chin); his face is the photo's own"
+  - "B = goran-library-polo (presenters/): his own library photo with the pale-mint polo recoloured to white WITHOUT a generative model (a Lab mask on the shirt, lightness kept); the face is untouched"
+  - "Voice: goran3f (his goran3 prompt sped up 1.22x, the pace he chose on 2026-10-25)"
+footage:
+  - what: "Terminal 1 on the Windows laptop: roomler peers --display-name --org primary, roomler why 100.65.4.34, ping -n 4 100.65.4.34"
+    source: real commands with their real output and timing (term.ts capture, roomler 0.4.167, 2026-10-24 ~23:45Z), replayed as a typed terminal. Spliced from two runs minutes apart: peers + why from one, the ping from another (the Mac's Wi-Fi ping jitters 5-296 ms from an idle radio; a warm-up ping, off camera, ran first). Device names holding deny-list terms are masked as office-pc-N, padded to keep the table's columns
+  - what: "Terminal 2: roomler exec ... ls -l, roomler ssh ... cat, the same cat redirected to a file, Get-Content"
+    source: real commands, real output (term.ts capture, 2026-10-25 ~00:00Z)
+  - what: "The MacBook in an Edge tab on the Windows laptop: the Roomler app (Overview, device settings), TextEdit (the note typed and saved), the viewer's file browser (the download, the transfer done)"
+    source: mesh-take.ts takes of 2026-10-24 23:56Z - 2026-10-25 00:12Z (macOS 27.0.1, roomlerd 0.4.167, direct, H.265 HW). The viewer's device label reads "MacBook Pro" (relabelled in the recorder). Other apps were hidden (Hide Others) for a clean screen and shown again after; the note was deleted after
+qa:
+  - "Privacy: the org name is covered by a solid box in the page's own colour — the Mac's 'Being viewed by' banner (take 1 0-10.5 s, take 2 throughout, the fill following the page's dimming under the viewer's dialog and the file drawer) and the MagicDNS value in the app's Overview. Found by deny-scan.ts (OCR of every second of both takes), boxed before any zoom."
+  - "The device settings shown are the Roomler app's: on this Mac the app talks to the GUI-session worker (per-user config), while exec and SSH ran against the root daemon, where both were already on. The video shows the switches and their 'Default: OFF' and never claims a toggle on screen enabled what followed. (Finding for Goran: on a root-mode Mac install the app's SSH/exec switches do not reach the root daemon.)"
+  - "The note is saved in the home folder, not the Desktop: macOS privacy protection (TCC) denies the root daemon's exec/ssh the Desktop ('Operation not permitted')."
+  - "Harness, file download: the page's showSaveFilePicker was removed so the viewer saved through its own fallback (the path Firefox takes) — a native Save dialog no script can drive. The drawer's path was set through the field's value (no key events), because typing in it ALSO typed into the Mac's focused app (a viewer bug: found, the stray text undone, reported)."
+  - "The viewer's own clicks (its dialog, the drawer, the transfers popover) show an arrow drawn by the recorder where the real mouse events land; over the Mac's screen the Mac draws its own pointer."
+  - "check.ts privacy FAILS on 'IPv4 address' at 0:13-0:24 by design of this video: it shows the mesh's own addresses. ip-scan.ts (every second at 2x, every IPv4 string classified) found only private ones — overlay 100.65.4.x (CGNAT 100.64/10, meaningful only inside this mesh) and the Mac's LAN 192.168.8.108 (in roomler why) — plus one string at 0:57 that OCR read as a public-looking address: a misread of the app's 'Overlay IP 100.65.4.34' (checked on the frame). No public address, no deny-list term, no e-mail anywhere. Goran's call before publishing."
+  - "Loudness: mix.ts normalises the VOICE to -14 LUFS; this video's long music-only stretches (the typing, the download) put the whole mix at -15.2. final.sh adds 1.3 dB under a limiter 2.5 dB below full scale: -14.6 LUFS, -2.2 dBTP after the AAC encode."
+  - "TextEdit's Dock click first restored Goran's own open document ('Mac Greeting', from the 120 fps demo) for ~2 s; the cut starts on the new note, so it never shows."
+claims:
+  - claim: "Roomler gives you a private network and remote desktop in one open-source app"
+    source: https://github.com/gjovanov/roomler-ai#readme
+  - claim: "Every device in my private network shows up here, with how it's connected"
+    source: the peers table in terminal 1 (real output)
+  - claim: "My MacBook is direct, about five milliseconds away, and so are my servers"
+    source: the peers table (MacBook-1-Daemon direct 4 ms; mars, jupiter, zeus direct 30-35 ms)
+  - claim: "When a firewall blocks the direct path, Roomler falls back to a relay over port 443"
+    source: the relayed row in the table (relay:derp/tcp); https://github.com/gjovanov/roomler-ai/blob/master/docs/overlay-nat-traversal.md (DERP over WSS :443, the floor that always connects)
+  - claim: "Roomler always tries the direct path first and keeps trying; the relay only sees encrypted traffic"
+    source: roomler why (the tier ladder: lan 499.1 > relay 200.0); docs/overlay-communication.md (never ratchet; the relay carries WireGuard ciphertext only)
+  - claim: "SSH and remote commands are off by default; only the person at the device can switch them on; the server never can"
+    source: the app's device settings (exec_enabled "Default: OFF"; remote_config_enabled "NEVER settable by the server"); docs/roomler-ssh.md §2 (ssh_enabled defaults false)
+  - claim: "Over SSH I can read the note; no sshd on the Mac and no open port"
+    source: terminal 2; https://github.com/gjovanov/roomler-ai/blob/master/docs/roomler-ssh.md (intercepted below the OS, nothing binds)
+  - claim: "Download it in the browser from the remote desktop's file browser"
+    source: take 2 (Remote files drawer, the transfer 'mesh-notes.txt 140 B — done'); the downloaded file was byte-identical to the note
+  - claim: "Open source, and you can host it yourself"
+    source: https://github.com/gjovanov/roomler-ai#readme

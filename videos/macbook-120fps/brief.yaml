@@ -1,0 +1,37 @@
+# The brief for videos/macbook-120fps: what the video may claim, each claim with its source.
+product: Roomler
+about: one open-source product for remote desktop from any browser, a private WireGuard mesh between your machines, and team chat and video calls
+end_title: roomler.ai
+end_subtitle: Open source · self-hostable
+footage:
+  - what: "The MacBook in a browser tab at 120 fps: the color test video, the window drags, the counter, the codec pill, the typing of \"Nothing to install on this side\""
+    source: takes recorded 2026-10-24 from Edge on the Windows laptop, direct to the MacBook (macOS, Roomler 0.4.163), 1664x1088 at 120 fps (the Mac's log 117.5-120.5 fps per 2 s window)
+  - what: "The \"work on it\" block: full screen in the tab, fast window drags, then typing in TextEdit"
+    source: Goran's own recording of 2026-10-13 (Roomler's recorder on his PC), an earlier session (relayed, 34-48 fps on its pills); no frame rate is shown or claimed over it. The Mac's banner names the org under Chrome's full-screen toast for 2.3 s; a solid box covers the name (OCR 0 of 78 frames, the uncovered control 70 of 78)
+qa:
+  - "check.ts privacy: ONE hit, at 1:27 (deny-list line 10, a 3-letter term), in the whole-frame sample only: an OCR false positive. Its word box (x533 y746 127x24 of 1920x1080) covers the Mac's Dock icons (Apple TV, Music, Launchpad) at 60% scale over the test pattern; there is no text there. Every band sample and every other frame is clean."
+claims:
+  - claim: "The previous video streamed a Mac mini running Linux at fifty-six frames a second, software encoded"
+    source: videos/wayland-asahi (https://youtu.be/q1Fgc3nM3W4); https://github.com/gjovanov/roomler-ai/blob/master/docs/fr/FR-112-software-encoding-at-60-fps.md
+  - claim: "Because Asahi has no driver for the Mac's video encoding hardware"
+    source: the previous video's own words; FR-112 §2 (software encoding on Asahi)
+  - claim: "Roomler, in the same browser tab, shows 120 frames per second on the MacBook with macOS"
+    source: https://github.com/gjovanov/roomler-ai/blob/master/docs/fr/FR-119-high-refresh-streaming.md (AC4, met 2026-10-24 on 0.4.162); the viewer's fps pill in the takes, enlarged
+  - claim: "The counter is the browser counting the frames it decodes"
+    source: the viewer's fps pill in the takes, read every 15th frame: 117-121 in 186 of 223 samples, 110-133 overall
+  - claim: "VideoToolbox encodes a full frame in about six milliseconds; at 120 fps each frame gets 8.3"
+    source: FR-119 §2 (6.3 ms, hevc_videotoolbox, 3024x1964; 120 fps needs at most 8.3 ms per frame)
+  - claim: "The Intel and Nvidia encoders we measured needed ten to twelve milliseconds"
+    source: FR-119 §2 (from FR-118 §2.2, a 7-day fleet read: 10.6 ms hevc_qsv 1080p, 11.9 ms av1_qsv 1200p, 9.9 ms av1_nvenc 1200p), on today's encode path
+  - claim: "Typing feels like working with a local desktop"
+    source: Goran's own impression, over his own recording (window drags and typing, full screen)
+  - claim: "The video you're watching runs at thirty frames a second"
+    source: the render (1920x1080 at 30 fps)
+  - claim: "Every two seconds the Mac writes down how many frames it sent: about 120"
+    source: the Mac's roomlerd log, the DC pump heartbeat of the take's session (117.5-120.5 fps per window), the terminal shot in this video
+  - claim: "The stream goes straight from the MacBook to the browser, peer to peer, and the browser decodes it on its GPU"
+    source: the viewer's pills in the takes ("direct", "dec HW"), enlarged
+  - claim: "No plugin; nothing to install on the controlling side"
+    source: https://github.com/gjovanov/roomler-ai#readme
+  - claim: "GPU encoding of the screen makes the difference; a home MacBook reached from the office feels local"
+    source: Goran's own view, after FR-119's numbers (above) and his own use

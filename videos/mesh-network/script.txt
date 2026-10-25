@@ -1,0 +1,37 @@
+# A private network, SSH and file transfer between my laptop and my MacBook (2026-10-25): Roomler as the
+# Tailscale alternative, presented by Goran's two avatars, A (standing at home) and B (seated in a library),
+# both in a white polo shirt, in his own cloned voice at his chosen pace (goran3f). Drafted while he slept,
+# from his brief: peers, ping, direct vs relay from his Windows laptop; the MacBook over remote desktop and its Roomler
+# app; a note written on the Mac; exec and ssh from the laptop; the note downloaded over SSH and in the browser.
+# The demo: real takes of 2026-10-25 — terminal shots of real commands with their real output and timing
+# (term.ts), and the MacBook in an Edge tab (mesh-take.ts). Numbers are spelled out for the voice.
+# Lines starting with # are the shots, not spoken. Each block ends on a longer pause (lines.ts --pause).
+#
+# [A, the hook.]
+goran3f: Tailscale gives you a private network. TeamViewer gives you remote desktop. Roomler gives you both, in one open-source app.
+# [Terminal on the Windows laptop: roomler peers --display-name.]
+goran3f: This is my Windows laptop. Every device in my private network shows up right here, with how it's connected.
+goran3f: My MacBook is direct, about five milliseconds away, and so are my servers, out on the internet.
+goran3f: When a firewall blocks the direct path, Roomler falls back to a relay over port four four three. Slower, but it works, which is more than I can say for most corporate VPNs.
+# [roomler why: the tier ladder, direct first, the relay eligible as the fallback.]
+goran3f: Roomler always tries the direct path first, and keeps trying. The relay is only a fallback, and it only ever sees encrypted traffic.
+# [ping over the overlay.]
+goran3f: And a plain old ping goes straight over the mesh to the Mac.
+# [B beside the browser connecting to the MacBook.]
+goran3f: Now let's jump onto the MacBook itself, right from the browser.
+# [The Roomler app on the Mac: Overview, then its device settings.]
+goran3f: The Roomler app on the Mac shows the same network from its side: its private address, its DNS name, and who's online.
+goran3f: SSH and remote commands are off by default. Only the person at the device can switch them on. The server never can.
+# [TextEdit: a note typed and saved in the home folder (the Desktop is privacy-protected on macOS: the root
+#  daemon's exec and ssh may not read it).]
+goran3f: Let's write a little note on the Mac and save it in my home folder. This is the Mac's own desktop, and I'm typing on it from a browser tab.
+# [A beside the terminal: roomler exec.]
+goran3f: Back on Windows, one command runs on the Mac, straight from my terminal.
+# [roomler ssh ... cat, then the copy over SSH.]
+goran3f: And over SSH, I can read that note. No sshd on the Mac, and no open port.
+goran3f: Copying it to this laptop over SSH is just as easy.
+# [The viewer's file browser: the note downloaded in the browser.]
+goran3f: Or download it right in the browser, from the remote desktop's file browser. Pick the folder, click download, and it's on this laptop.
+# [End card with B.]
+goran3f: One app: a private network, SSH, remote commands, remote desktop and file transfer.
+goran3f: It's open source, and you can host it yourself. Try it, and tell me what you'd connect first.
