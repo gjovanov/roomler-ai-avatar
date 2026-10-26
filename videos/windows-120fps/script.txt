@@ -1,10 +1,12 @@
 # #1 of the 2026-10-26 list: Windows remote desktop above 60 fps (FR-119 P2b-10..15, agent 0.4.172). Drafted overnight
 # for Goran and auto-approved by his instruction ("after all scripts are ready go ahead auto approve and record the
 # first in the list"). Presenters: his two red-polo avatars, voice goran3f.
-# HONEST FRAME (the FR-119 session's own limits, 2026-10-26): no "120 fps delivered", no automatic clock pin (#2920
-# is unmerged and unverified), no latency, no generality beyond this laptop (RTX 5090 Laptop, NVENC AV1, a 240 Hz
+# HONEST FRAME (the FR-119 session's own limits, 2026-10-26): no "a full 120 fps delivered" (the proven trial measured
+# 112.4) and no 144 (its trial failed), no latency, no generality beyond this laptop (RTX 5090 Laptop, NVENC, a 240 Hz
 # panel) and one viewer (Chrome on the MacBook, one home LAN, direct), and never "we fixed Windows": Roomler lowers
 # the interval for its own capture session only. The 114 the operator saw is NOT used (no picture of it exists).
+# 08:2xZ: the automatic clock pin (P2b-16, agent 0.4.174) was proven on this laptop the next morning, so the closing
+# line changed from "the next fix, shown when proven" to the proven trial (terminal 3).
 # The demo: the terminal take of 2026-10-26 00:23Z on the laptop (wgcrate.exe: Windows' own interval, 59.2 / 195.0 /
 # 59.0 fps; roomlerd's own capture bench at a 120 target: 118.4 fps), and the agent's own log of the 2026-10-25
 # 22:41Z session (sent fps per 2 s, the trial's verdict: 1058 frames in 10.0 s = 105.7 fps, p90 encode 10.9 ms).
@@ -29,7 +31,8 @@ goran3f: And the real thing? My MacBook's browser, on my home network, connected
 goran3f: Then Roomler stepped back to sixty. On purpose.
 # [A.]
 goran3f: The graphics card had clocked itself down to save power, and one frame in ten took about eleven milliseconds to encode. More than the eight it gets. Roomler tests a high rate before it trusts it, and a smooth sixty beats a stuttering hundred.
-goran3f: With the clocks pinned by hand, it held about a hundred and ten for a minute. Teaching Roomler to do that by itself is the next fix. I'll show you when it's proven.
+# [Terminal 3: the agent's own log of the next morning's session on the newest release: the trial proven.]
+goran3f: Pin the clocks by hand, and it held about a hundred and ten. So we taught Roomler to do that by itself, only while it streams fast. Next morning, same laptop, same MacBook: a hundred and twelve frames a second, and this time the check said yes.
 # [End card with B.]
 goran3f: And yes, this video runs at thirty frames a second. After this week, that feels personal.
 goran3f: Roomler is open source, and you can host it yourself. Try it, and if your frame rate is a weird number too, tell me. Weird numbers are my favourite.
