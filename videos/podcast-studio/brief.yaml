@@ -46,6 +46,8 @@ claims:
     source: docs/overlay-communication.md (the server coordinates but never carries plaintext; DERP relays only see ciphertext)
   - claim: "SSH and remote commands over the mesh with no SSH server and no open port; off by default; the server can't switch them on by itself, the machine has to say yes first"
     source: docs/roomler-ssh.md (no sshd, no bound port); docs/fleet-rpc.md (exec_enabled, the device-side gate); docs/remote-config.md (remote configuration is a device-local opt-in, default off: 'remotely configurable without making it server-configurable')
+  - claim: "It is for agencies and contractors working inside client infrastructure (v2, Goran's wording)"
+    source: the blog post ("My wife as an accountant accesses corp-machines that belong to someone's IT department via VPN"; every installer streams through roomler.ai so a client's allow-list can name one domain); docs/installation.md
   - claim: "Self-hosted: no license key and no device limit"
     source: the blog post ('Self-hosted — unlimited devices, no licence key'); the self-host image carries no plan module (docs/modular-monolith.md)
   - claim: "On Windows a setup wizard (pick a role, next, done); or one line in a terminal on Windows, Linux or macOS with a one-time enrollment code from your account"
@@ -53,7 +55,8 @@ claims:
   - claim: "Open source, and you can host it yourself"
     source: https://github.com/gjovanov/roomler-ai#readme
 invented:
-  - "The two lines about his wife ('she still swears ... just not at remote desktops anymore', 'she also says she wrote the specification') are jokes Goran approved with the script on 2026-10-26, not quotes"
+  - "The two lines about his wife ('she still swears ... just not at remote desktops anymore', 'she should get more credit for writing the product specification') are jokes Goran approved and edited himself, not quotes"
+  - "v2 (2026-10-26 night): the host's laughs and short reactions, the topic transitions and 'Some people call it management' / 'Hahaha, nicely reframed' were written for a natural conversation at Goran's request; they claim nothing"
   - "Helen and the studio are invented; the conversation is scripted"
 not_claimed:
   - "any number not on screen in an earlier video; any latency figure; that the relay is as fast as a direct path ('slower, but it connects')"
