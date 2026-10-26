@@ -7,7 +7,7 @@
 // so the same face can be rendered again).
 //
 //   bun tools/avatar/portrait.ts render <id> [--seeds 11,12,13,14] [--size 1024 | --wh WxH] an invented face (Z-Image-Turbo)
-//   bun tools/avatar/portrait.ts edit <id> --from <photo> [--seeds 21,22,23,24] [--size 1024 | --wh 832x1248] [--keep-framing] [--prompt "..."]
+//   bun tools/avatar/portrait.ts edit <id> --from <photo> [--ref2 <image>] [--seeds 21,22,23,24] [--size 1024 | --wh 832x1248] [--keep-framing] [--prompt "..."]
 //                                                                                       a real person's own photo (Qwen-Image-Edit-2511)
 //   bun tools/avatar/portrait.ts pick <id> <seed> [--edit | --keep]
 //
@@ -41,9 +41,14 @@ if (cmd === "render" || cmd === "edit") {
   const from = cmd === "edit" ? resolve(opt("from", "")) : "";
   if (cmd === "edit" && !existsSync(from)) throw new Error(`--from ${from}: no such photo`);
   const ref = cmd === "edit" ? stage(from) : "";
+  // --ref2 <image>: a second reference for the edit ("image 2" in the prompt), e.g. the scene to put the
+  // person in; the framing stays the photo's (--keep-framing) or the canvas's.
+  const ref2Path = opt("ref2", "") ? resolve(opt("ref2", "")) : "";
+  if (ref2Path && !existsSync(ref2Path)) throw new Error(`--ref2 ${ref2Path}: no such image`);
+  const ref2 = cmd === "edit" && ref2Path ? stage(ref2Path) : undefined;
   for (const seed of opt("seeds", cmd === "edit" ? "21,22,23,24" : "11,12,13,14").split(",").map(Number)) {
     const wf = cmd === "edit"
-      ? qwenEdit({ image: ref, prompt: opt("prompt", p.portrait_prompt), seed, prefix: `presenter-${id}-edit-${seed}`, ...(args.includes("--keep-framing") ? {} : { width: ow, height: oh }) })
+      ? qwenEdit({ image: ref, image2: ref2, prompt: opt("prompt", p.portrait_prompt), seed, prefix: `presenter-${id}-edit-${seed}`, ...(args.includes("--keep-framing") ? {} : { width: ow, height: oh }) })
       : portrait({ prompt: p.portrait_prompt, width: ow, height: oh, seed, prefix: `presenter-${id}-${seed}` });
     const r = await run(wf, { label: `${id} seed ${seed}` });
     const [png] = files(r.outputs);

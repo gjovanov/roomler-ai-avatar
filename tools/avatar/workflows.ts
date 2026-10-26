@@ -46,6 +46,9 @@ export function portrait(o: PortraitOptions): Workflow {
 export interface EditOptions {
   /** Staged name of the person's own photo: the identity reference. */
   image: string;
+  /** Staged name of a second reference ("image 2" in the prompt): a scene, a garment, a prop. The output
+   *  keeps image 1's framing (or the width/height canvas); image 2 only informs it. */
+  image2?: string;
   prompt: string;
   seed: number;
   /** An output canvas of its own size (re-framing); omit to keep the photo's own framing. */
@@ -58,13 +61,17 @@ export interface EditOptions {
  *  graph (image_qwen_image_edit_2511) at 4 steps and cfg 1. The photo goes in as a reference image; with
  *  width/height the output is a fresh canvas, so a selfie can become a centred presenter portrait. */
 export function qwenEdit(o: EditOptions): Workflow {
-  const ref = (prompt: string) => ({ class_type: "TextEncodeQwenImageEditPlus", inputs: { clip: ["clip", 0], prompt, vae: ["vae", 0], image1: ["scaled", 0] } });
+  const ref = (prompt: string) => ({ class_type: "TextEncodeQwenImageEditPlus", inputs: { clip: ["clip", 0], prompt, vae: ["vae", 0], image1: ["scaled", 0], ...(o.image2 ? { image2: ["scaled2", 0] } : {}) } });
   return {
     unet: { class_type: "UNETLoader", inputs: { unet_name: "qwen_image_edit_2511_fp8_e4m3fn_scaled_lightning_comfyui_4steps_v1.0.safetensors", weight_dtype: "default" } },
     clip: { class_type: "CLIPLoader", inputs: { clip_name: "qwen_2.5_vl_7b_fp8_scaled.safetensors", type: "qwen_image", device: "default" } },
     vae: { class_type: "VAELoader", inputs: { vae_name: "qwen_image_vae.safetensors" } },
     img: { class_type: "LoadImage", inputs: { image: o.image } },
     scaled: { class_type: "FluxKontextImageScale", inputs: { image: ["img", 0] } },
+    ...(o.image2 ? {
+      img2: { class_type: "LoadImage", inputs: { image: o.image2 } },
+      scaled2: { class_type: "FluxKontextImageScale", inputs: { image: ["img2", 0] } },
+    } : {}),
     shift: { class_type: "ModelSamplingAuraFlow", inputs: { model: ["unet", 0], shift: 3.1 } },
     norm: { class_type: "CFGNorm", inputs: { model: ["shift", 0], strength: 1 } },
     pos0: ref(o.prompt),
