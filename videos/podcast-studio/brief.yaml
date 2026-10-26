@@ -59,3 +59,8 @@ not_claimed:
   - "any number not on screen in an earlier video; any latency figure; that the relay is as fast as a direct path ('slower, but it connects')"
 disclosure:
   - "The end card says 'AI-generated hosts · real screen recordings'; no presenter label on the tiles (as Goran chose on 2026-10-23); each platform's AI-content flag when publishing"
+qa:
+  - "check.ts (2026-10-26 ~17:36Z): specs PASS (h264 1920x1080 at 30 fps, 334.3 s, aac 48 kHz); loudness PASS (-14.2 LUFS integrated, -1.6 dBTP); privacy PASS (334 frames OCR'd at 1 fps, whole and in three bands, against the deny list, e-mail and IPv4 patterns: 0 hits). A sound-only fix afterwards (below) copied the picture stream bit for bit"
+  - "Music: the track runs 135 s, so the end card first came out silent; the title now carries the track's opening (-18 LUFS) and the end card a strong passage from 112 s (-16 LUFS), faded out"
+  - "Narration: every line's Whisper transcript read by hand; re-rendered with other seeds: line 13 (said twice), 23 and 31 (garbled openings; 31 then paused 2 s after 'No,'), 38 (dropped 'Two ways'), 45 ('want to swear' at risk), 4 ('an' for 'One'), 11 and 18 (a stray sound before Helen's first word)"
+  - "Privacy boxes: the roomler peers table carries a box per row with a generic role in place of every machine name and a box over both address columns; the SSH commands' device name is boxed as 'MacBook'"
