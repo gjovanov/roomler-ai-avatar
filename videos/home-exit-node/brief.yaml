@@ -1,0 +1,34 @@
+# The brief for videos/home-exit-node (#7 of the 2026-10-26 list). Status: script drafted 2026-10-26; NOT recorded.
+product: Roomler
+about: one open-source product for remote desktop from any browser, a private WireGuard mesh between your machines, and team chat and video calls
+end_title: roomler.ai
+end_subtitle: Open source · self-hostable
+presenters:
+  - "A = goran-r5-redpolo, B = goran-mint-redpolo (see videos/windows-120fps/brief.yaml); voice goran3f"
+demo_plan:
+  - "A laptop on a phone hotspot (away from home); an IP-check page: the hotspot's carrier (the address boxed)"
+  - "`roomler config set overlay_exit_node <home machine>`; `roomler status`: exit node <home>, connected; the IP-check page again: the home ISP (boxed, never read out)"
+  - "DNS: the status line showing DNS steered to the exit (no leak)"
+  - "B beside the admin page: the exit node approved"
+  - "`roomler config clear overlay_exit_node`; the IP-check page back on the hotspot"
+verify_before_recording:
+  - "PRIVACY: Goran's home IP, ISP, city and router never appear unboxed and are never read out"
+  - "Exit nodes are default-OFF and admin-approved: use an exit already approved in his org, or approve one on camera (it writes is_exit_node AND /0 into approved_routes)"
+  - "CLAUDE.md: never run the exit field test on a prod cluster node; the exit reroutes the host's own inbound replies, so it breaks un-exempted SSH"
+  - "The laptop used is not the one every Claude session runs on (an exit there would reroute every session's traffic)"
+claims:
+  - claim: "One setting sends everything through my home machine; Roomler calls it an exit node"
+    source: https://github.com/gjovanov/roomler-ai/blob/master/docs/overlay-exit-nodes.md (overlay_exit_node); the take
+  - claim: "Now the world sees my home connection"
+    source: the IP-check page before and after (boxed)
+  - claim: "Name lookups go home too, so the hotspot doesn't learn which sites I visit"
+    source: docs/overlay-exit-nodes.md, "DNS steering (no leak)"
+  - claim: "A machine doesn't become an exit because it wants to: it offers, an admin approves"
+    source: docs/overlay-exit-nodes.md (admin approval writes is_exit_node and /0 to approved_routes; a stray /0 is inert)
+  - claim: "The laptop keeps its own line to Roomler outside that route, so it can never lock itself out"
+    source: docs/overlay-exit-nodes.md (control-plane and carrier exemptions pinned first; the withhold gate; route guard); CLAUDE.md "never self-wedge"
+  - claim: "Open source, and you can host it yourself"
+    source: https://github.com/gjovanov/roomler-ai#readme
+not_claimed:
+  - "anonymity; that the hotel cannot see the laptop at all; any speed figure"
+qa: []

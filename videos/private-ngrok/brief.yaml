@@ -1,0 +1,29 @@
+# The brief for videos/private-ngrok (#6 of the 2026-10-26 list). Status: script drafted 2026-10-26; NOT recorded.
+product: Roomler
+about: one open-source product for remote desktop from any browser, a private WireGuard mesh between your machines, and team chat and video calls
+end_title: roomler.ai
+end_subtitle: Open source · self-hostable
+presenters:
+  - "A = goran-r5-redpolo, B = goran-mint-redpolo (see videos/windows-120fps/brief.yaml); voice goran3f"
+demo_plan:
+  - "On one of his Linux servers: a tiny dashboard bound to 127.0.0.1:3000 only (shown with `ss -ltn`)"
+  - "On the laptop: `roomler forward --agent <server> --local 127.0.0.1:8080 --remote 127.0.0.1:3000` (check the exact flags with `roomler forward --help` on the day), then the browser at localhost:8080 showing the dashboard"
+  - "`roomler peers`: the server's row direct (or relay), the flow riding the mesh"
+  - "B beside the org's tunnel policy page: default deny"
+verify_before_recording:
+  - "The forward reaches the server's own loopback (127.0.0.1:3000) under the tenant's tunnel policy; if the policy denies it, show that refusal instead of changing policy on camera"
+  - "No public URL is created anywhere (docs/compare/vs-tailscale.md: public ingress = no)"
+claims:
+  - claim: "One command forwards a local port on my laptop to a port on my home server; the router opens nothing"
+    source: https://github.com/gjovanov/roomler-ai/blob/master/docs/tunnels.md; the take
+  - claim: "The connection rides my private network, peer to peer when it can, through a relay when it has to, encrypted either way"
+    source: docs/overlay-communication.md, docs/overlay-nat-traversal.md
+  - claim: "There is no public URL"
+    source: https://github.com/gjovanov/roomler-ai/blob/master/docs/compare/vs-tailscale.md (public ingress: no)
+  - claim: "Who may reach what is a policy your organization writes, and the default answer is no"
+    source: CLAUDE.md pillar 2, commitment 5 (default-deny, tenant-scoped tunnel ACLs); docs/tunnels.md
+  - claim: "Open source, and you can host it yourself"
+    source: https://github.com/gjovanov/roomler-ai#readme
+not_claimed:
+  - "public sharing of a link; that it replaces ngrok for public demos"
+qa: []

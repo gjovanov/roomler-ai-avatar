@@ -1,0 +1,39 @@
+# The brief for videos/hardest-network (#2 of the 2026-10-26 list): what the video may claim, each claim with its source.
+# Status: script drafted 2026-10-26; NOT recorded. Recording uses Goran's managed work laptops (his own org, allowed for
+# videos since 2026-10-26 ~00:31Z), every name, the employer, the VPN vendor and every address boxed.
+product: Roomler
+about: one open-source product for remote desktop from any browser, a private WireGuard mesh between your machines, and team chat and video calls
+end_title: roomler.ai
+end_subtitle: Open source · self-hostable
+presenters:
+  - "A = goran-r5-redpolo, B = goran-mint-redpolo (see videos/windows-120fps/brief.yaml); voice goran3f"
+demo_plan:
+  - "On the work laptop (full-tunnel corporate VPN, no admin rights): `roomler status` (the `lan CAPTURED` line, `srflx NONE`), then `roomler peers` (the home machine's row: relay:derp/tcp and its latency). term.ts capture, names masked"
+  - "Over that path: `roomler ssh <home machine> -- <a harmless command>`, then the home machine's desktop in a browser tab on the work laptop (rc_overlay is on for that laptop)"
+  - "A diagram (generated): laptop -> the company's inspection box -> the relay -> home, ciphertext at every hop"
+verify_before_recording:
+  - "The laptop is idle (nobody working on it), and nothing from the employer appears on screen: an empty desktop, a new browser profile window"
+  - "`roomler status` still reads lan CAPTURED and srflx NONE that day (the 2026-09-06 measurement may have changed with a VPN update)"
+  - "The remote-desktop session from that laptop works over DERP (CLAUDE.md: Check Point laptops need rc_overlay for RC)"
+claims:
+  - claim: "A locked-down work laptop: full-tunnel corporate VPN, no admin rights, every outgoing UDP packet blocked"
+    source: measured 2026-09-06 on two such laptops (STUN to 19302 and 3478 time out, TCP 443 succeeds; Windows Firewall off, so the block is the VPN's); re-measure on the day
+  - claim: "The local network is captured by the VPN; hole punching finds nothing"
+    source: "`roomler status` on camera (lan CAPTURED, srflx NONE); https://github.com/gjovanov/roomler-ai/blob/master/docs/overlay-nat-traversal.md (FR-33 surfaces the capture, it does not bypass it)"
+  - claim: "Roomler takes the one door left open: an ordinary encrypted web connection on port 443"
+    source: "`roomler peers` on camera (relay:derp/tcp); docs/overlay-nat-traversal.md (DERP over WSS :443, the floor that always connects)"
+  - claim: "Slower than direct, but it connects"
+    source: the RTT column on camera against the direct rows
+  - claim: "Over it: SSH, remote commands, the remote desktop of the machine at home"
+    source: the takes; https://github.com/gjovanov/roomler-ai/blob/master/docs/roomler-ssh.md
+  - claim: "The relay forwards WireGuard packets it cannot read; it knows two devices talk, not what they say"
+    source: https://github.com/gjovanov/roomler-ai/blob/master/docs/overlay-communication.md (the relay carries WireGuard ciphertext only; the server never carries plaintext)
+  - claim: "Even the company's inspection box finds just more encryption inside"
+    source: follows from the above: TLS inspection opens the outer TLS of the DERP connection, and what is inside is WireGuard ciphertext keyed by the two devices
+  - claim: "Roomler keeps measuring and moves to a direct path the moment one opens"
+    source: CLAUDE.md pillar 2, commitment 1 (never ratchet: make-before-break, relentless re-upgrade); docs/overlay-nat-traversal.md
+  - claim: "Ask your IT department first"
+    source: a joke with a point: FR-33 treats bypassing a corporate capture as out of scope (policy evasion)
+not_claimed:
+  - "that it bypasses corporate policy, the employer's name, the VPN vendor, or any address"
+qa: []

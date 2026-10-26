@@ -1,0 +1,27 @@
+# The brief for videos/locked-headless (#5 of the 2026-10-26 list). Status: script drafted 2026-10-26; NOT recorded.
+product: Roomler
+about: one open-source product for remote desktop from any browser, a private WireGuard mesh between your machines, and team chat and video calls
+end_title: roomler.ai
+end_subtitle: Open source · self-hostable
+presenters:
+  - "A = goran-r5-redpolo, B = goran-mint-redpolo (see videos/windows-120fps/brief.yaml); voice goran3f"
+demo_plan:
+  - "Windows, locked: a Windows machine of his that nobody is using (NOT the laptop all sessions run on), locked; a browser tab shows its lock screen; Ctrl+Alt+Del from the viewer's toolbar; the take STOPS at the password prompt"
+  - "Windows, nobody logged in: the same machine after a restart, its sign-in screen in the tab"
+  - "Linux, no monitor: a headless Linux host of his with roomlerd's virtual desktop (the WSL instance already runs one: Xorg :99, xfwm4, pcmanfm); a terminal and a browser opened on it from the tab"
+verify_before_recording:
+  - "The Windows machine is idle and its owner is not using it; restore it signed-out-or-locked as found. NEVER type a password (the unlock, if shown, is Goran's own take)"
+  - "Which env var / key turns the virtual desktop on in the shipped build (CLAUDE.md names ROOMLER_AGENT_VIRTUAL_DESKTOP=1; the config has virtual_desktop_apps) — say only what the docs say"
+  - "A ROOMLER_AGENT_VIRTUAL_DESKTOP=1 host is not a consent surface (CLAUDE.md, FR-27): do not show or imply a consent prompt there"
+claims:
+  - claim: "Roomler shows a Windows lock screen, and Ctrl+Alt+Del goes through from a browser tab"
+    source: https://github.com/gjovanov/roomler-ai/blob/master/docs/remote-control.md (the Windows SystemContext service: lock screen, UAC, pre-logon; Ctrl+Alt+Del via SendSAS, FR-97 P4a); the take
+  - claim: "Freshly restarted, nobody logged in: the sign-in screen is right there, because Roomler runs as a system service on Windows"
+    source: docs/remote-control.md (pre-logon, SYSTEM service); the take
+  - claim: "A Linux server with no monitor gets a virtual desktop, in the browser"
+    source: docs/remote-control.md (headless Linux: Xvfb / virtual desktop); the take
+  - claim: "Open source, and you can host it yourself"
+    source: https://github.com/gjovanov/roomler-ai#readme
+not_claimed:
+  - "anything typed into a password field; consent behaviour on a virtual desktop"
+qa: []

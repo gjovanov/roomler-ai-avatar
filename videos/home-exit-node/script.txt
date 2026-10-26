@@ -1,0 +1,27 @@
+# #7 of the 2026-10-26 list: "Use your home internet from anywhere" (overlay exit nodes, docs/overlay-exit-nodes.md).
+# Drafted overnight for Goran; presenters: his two red-polo avatars, voice goran3f. PRIVACY: the demo must never show
+# his home IP, ISP, city or router; the "what's my IP" result is shown boxed, and the script never reads it out.
+# The demo (to record): a laptop away from home (a hotspot); `roomler config set overlay_exit_node <home>`; an
+# IP-check page before (the hotspot's carrier) and after (home: boxed); `roomler status` naming the exit; DNS stays
+# on the tunnel (no leak, docs §DNS steering); switching it off again.
+# Lines starting with # are the shots, not spoken.
+#
+# [A, the hook: a hotel-style captive portal page, then the presenter.]
+goran3f: Hotel Wi-Fi. Free, fast-ish, and shared with four hundred strangers and whoever runs that captive portal.
+goran3f: I'd rather go through my own internet at home. So let's do exactly that, from here.
+# [Laptop terminal beside B: an IP-check page first, the carrier's network named, the address boxed.]
+goran3f: Right now this laptop goes out through the hotspot. That's the address the world sees.
+# [The one setting: roomler config set overlay_exit_node <home>.]
+goran3f: One setting: send everything through my home machine. In Roomler that's called an exit node.
+# [The IP-check page again: now the home network (boxed). roomler status: exit node <home>, connected.]
+goran3f: Refresh. Now the world sees my home connection. Same laptop, same coffee, different internet.
+# [The DNS line in roomler status; no queries leaving on the hotspot.]
+goran3f: The name lookups go home too, so the hotspot doesn't learn which sites I visit from the side door.
+# [B beside the admin page: the exit node approved.]
+goran3f: A machine doesn't become an exit just because it wants to. It offers, and an admin in your organization approves it.
+goran3f: And the laptop keeps its own line to Roomler outside that route, so it can never lock itself out. Which, honestly, is more than I can say about me and my own front door.
+# [The setting cleared; the IP-check page back to the hotspot.]
+goran3f: Switch it off, and you're back on the hotel's internet, for better or for worse.
+# [End card with A.]
+goran3f: Your home internet, from anywhere, on your own private network. Roomler is open source, and you can host it yourself.
+goran3f: Try it on your next trip. The hotel will never know. Well, it will know you're there. Just not what you're doing.

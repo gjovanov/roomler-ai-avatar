@@ -1,0 +1,27 @@
+# #5 of the 2026-10-26 list: "Locked screen, nobody logged in, a headless server" (docs/remote-control.md: the Windows
+# SystemContext service for lock screen / UAC / pre-logon, Ctrl+Alt+Del via SendSAS (§5.1e, FR-97 P4a); a locked Mac
+# wakes to its lock screen and input reaches it; a headless Linux box gets its own virtual desktop, Xvfb under
+# ROOMLERD_VIRTUAL_DESKTOP=1). Drafted overnight for Goran; presenters: his red-polo avatars, voice goran3f.
+# RULE FOR THE DEMO: the recording reaches each sign-in screen and STOPS there. Nobody types a real password on camera
+# (and the agent recording it never types one at all); the unlock, if shown, is Goran's own take.
+# Lines starting with # are the shots, not spoken.
+#
+# [A, the hook.]
+goran3f: Remote desktop tools love a demo where everything is already unlocked and logged in. Real machines are rarely that polite.
+goran3f: So let's do the three annoying cases: a locked screen, a machine nobody is logged into, and a server with no screen at all.
+# [Browser tab: a Windows laptop on its lock screen.]
+goran3f: Case one. My Windows laptop locked itself while I was away, as it should.
+goran3f: Roomler still shows the lock screen, and Control Alt Delete goes through, from a browser tab.
+# [The password prompt appears; the take stops there.]
+goran3f: This is where I type my password. Off camera. I've seen what happens to people who type passwords on YouTube.
+# [The same laptop after a restart: the sign-in screen, no user session at all.]
+goran3f: Case two. Freshly restarted, nobody logged in. A lot of tools give up here, because there's no user session to attach to.
+goran3f: Roomler runs as a system service on Windows, so the sign-in screen is right there, waiting for you.
+# [B beside a Linux server in the rack / the server's terminal: no monitor attached.]
+goran3f: Case three. A Linux server. No monitor, no keyboard, no desktop. Just a box in a corner, humming.
+# [Browser tab: a full desktop on that server, a terminal and a browser open on it.]
+goran3f: Roomler starts a virtual desktop on it, and suddenly that box has a screen, in my browser.
+goran3f: The server didn't even have to pretend it had a monitor. Roomler did the pretending.
+# [End card with A.]
+goran3f: Locked, logged out, or never had a screen to begin with. Roomler is open source, and you can host it yourself.
+goran3f: Try it, and tell me which of your machines was the most impolite.

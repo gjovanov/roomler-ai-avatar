@@ -1,0 +1,31 @@
+# #2 of the 2026-10-26 list: "the hardest claim, proven". "It just works" on the meanest network measured: a managed
+# work laptop under a full-tunnel corporate VPN that captures the LAN and blocks ALL outbound UDP (STUN to 19302 and
+# 3478 time out; TCP 443 succeeds), measured 2026-09-06 on two such laptops. DERP over TLS on port 443 is the only
+# carrier there, and it carries the mesh (docs/overlay-nat-traversal.md: the derp_floor, "connectivity is never
+# all-or-nothing"). Drafted overnight for Goran; presenters: his red-polo avatars, voice goran3f.
+# RECORDING NEEDS GORAN'S OK: the only such laptops are his managed work laptops.
+# PRIVACY: never the laptop's name, the employer, the VPN vendor, or any address; `roomler status` / `roomler peers`
+# are shown with names masked, and the work desktop never appears.
+# The demo (to record, with his OK): on the work laptop, `roomler status` (the lan CAPTURED line, srflx NONE),
+# `roomler peers` (the relay:derp/tcp row and its latency), then over that path an SSH session and a remote-desktop
+# session to a home machine (rc_overlay on, as that laptop needs).
+# Lines starting with # are the shots, not spoken.
+#
+# [A, the hook.]
+goran3f: Every networking product says it just works. So let's test that on the meanest network I can get my hands on.
+goran3f: A locked-down work laptop. A full-tunnel corporate VPN, no admin rights, and, as it turns out, every outgoing UDP packet blocked.
+# [The work laptop's terminal beside B: roomler status, the lan CAPTURED line, srflx NONE.]
+goran3f: Here's what Roomler sees. The local network is captured by the VPN. Hole punching finds nothing, because UDP never leaves this laptop.
+goran3f: This is where most peer-to-peer tools give up, with a polite error message. Or an impolite one.
+# [roomler peers: the home machine's row, relay:derp/tcp, its latency.]
+goran3f: Roomler takes the one door this network leaves open: an ordinary encrypted web connection, on port four four three.
+goran3f: Slower than direct, sure. But it connects.
+# [Over that path: an SSH session to the home machine, then its desktop in a browser tab.]
+goran3f: And over it, the whole thing. SSH, remote commands, even the remote desktop of my machine at home.
+# [B beside a diagram: laptop, the company's inspection box, the relay, home. Ciphertext at every hop.]
+goran3f: Now the important part. The relay in the middle forwards WireGuard packets it cannot read. It knows two of my devices are talking, not what they're saying.
+goran3f: Even the company's own box, the one that opens every web connection to look inside, finds just more encryption in there.
+goran3f: And Roomler never settles for the slow road. It keeps measuring, and the moment a direct path opens up, it moves over.
+# [End card with A.]
+goran3f: The strictest network I could find, and it still just works. Roomler is open source, and you can host it yourself.
+goran3f: Try it on your own work laptop. After you ask your IT department. I'm serious. Mostly.

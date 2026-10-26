@@ -1,0 +1,27 @@
+# #8 of the 2026-10-26 list: "Run one command on ten machines" (Fleet RPC, docs/fleet-rpc.md). Drafted overnight for
+# Goran; presenters: his two red-polo avatars, voice goran3f. HONEST FRAME: `roomler exec` targets ONE device per call
+# and composes in a shell loop (its exit status mirrors the remote command's); the count said on screen is the REAL
+# number of exec-enabled devices at recording time (replace "ten" if it isn't ten).
+# The demo (to record): on the laptop, `roomler devices` (Windows, macOS, Linux mixed); a one-line loop running
+# `roomler exec <each> -- <a version/uptime command>`; the answers scroll in; one machine refusing because its owner
+# never switched exec on (the gate working, on camera); the audit view.
+# Lines starting with # are the shots, not spoken.
+#
+# [A, the hook.]
+goran3f: Quick question for everyone with more than three computers. Which version is each of them running? Right now.
+goran3f: The traditional answer involves remote desktop, nine logins, and a slowly dying afternoon.
+# [Laptop terminal beside B: roomler devices: Windows, Mac, Linux in one list.]
+goran3f: Here's every machine in my private network. Windows laptops, a MacBook, Linux servers, from one list.
+# [The one-line loop; the answers scroll in, host by host.]
+goran3f: And here's the afternoon, compressed into one line. Roomler exec, the same command, every machine.
+goran3f: Each one answers in a second or two, over the connection the machine already has to Roomler. No SSH keys flying around, no open ports.
+# [One host refuses: exec is off there.]
+goran3f: And this one says no. Its owner never switched remote commands on, and that's a decision Roomler respects. Even from me.
+# [B beside the gates: org switch, the permission, the device's own switch; then the audit list.]
+goran3f: There are four gates: your organization's switch, your own permission, the device's policy, and a switch on the machine itself that only whoever holds it can flip.
+goran3f: Every command is logged, who ran what, where, and when. So the answer to "who restarted the build server at three a.m." is now one click away.
+# [The loop again, with a real fix: a service restart on all of them.]
+goran3f: And it doesn't stop at reading. Same loop, a real fix, every machine. Carefully. These commands run with full admin rights.
+# [End card with A.]
+goran3f: One command, every machine, every answer logged. Roomler is open source, and you can host it yourself.
+goran3f: Try it, and tell me how many logins you just saved.

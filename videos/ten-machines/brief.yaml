@@ -1,0 +1,35 @@
+# The brief for videos/ten-machines (#8 of the 2026-10-26 list). Status: script drafted 2026-10-26; NOT recorded.
+product: Roomler
+about: one open-source product for remote desktop from any browser, a private WireGuard mesh between your machines, and team chat and video calls
+end_title: roomler.ai
+end_subtitle: Open source · self-hostable
+presenters:
+  - "A = goran-r5-redpolo, B = goran-mint-redpolo (see videos/windows-120fps/brief.yaml); voice goran3f"
+demo_plan:
+  - "`roomler devices` (or the device list) on the laptop: Windows, macOS and Linux machines; names boxed or masked"
+  - "A one-line loop of `roomler exec <device> -- <a read-only command>` (the version, uptime) over his exec-enabled devices; the real count said on camera"
+  - "One device refusing because its own exec switch is off (gate 4), shown as it comes back"
+  - "The audit view (VIEW_EXEC_AUDIT): who ran what, where, when"
+  - "The 'real fix' beat: a harmless, reversible command only (never a restart on a machine someone is using)"
+verify_before_recording:
+  - "The REAL number of exec-enabled devices that day; change \"ten\" in the script if it isn't ten"
+  - "`roomler exec` re-splits argv: Windows targets need ONE quoted argument, and `;` never `&&`"
+  - "Family members' machines are excluded; no machine someone is using gets anything but a read-only command"
+claims:
+  - claim: "One command, every machine, Windows, macOS and Linux from one list"
+    source: the take; https://github.com/gjovanov/roomler-ai/blob/master/docs/fleet-rpc.md
+  - claim: "Each answers over the connection the machine already has to Roomler: no SSH keys, no open ports"
+    source: docs/fleet-rpc.md (exec rides the agent's existing control WebSocket, deliberately not the overlay)
+  - claim: "A machine whose owner never switched remote commands on says no, even to me"
+    source: docs/fleet-rpc.md, gate 4 (the agent-local exec_enabled key, held by whoever holds the machine, default off; the one refusal that survives a compromised server)
+  - claim: "Four gates: the organization's switch, your own permission, the device's policy, and a switch on the machine itself"
+    source: docs/fleet-rpc.md, "The four gates" (remote_exec_enabled, EXEC_DEVICE, Agent.exec_policy, exec_enabled; all default off)
+  - claim: "Every command is logged: who ran what, where, when"
+    source: docs/fleet-rpc.md (the audit trail; VIEW_EXEC_AUDIT)
+  - claim: "These commands run with full admin rights"
+    source: CLAUDE.md, Fleet RPC (SYSTEM on Windows, root under systemd)
+  - claim: "Open source, and you can host it yourself"
+    source: https://github.com/gjovanov/roomler-ai#readme
+not_claimed:
+  - "a broadcast/fan-out command built into roomler exec (it is one device per call, composed in a shell loop)"
+qa: []

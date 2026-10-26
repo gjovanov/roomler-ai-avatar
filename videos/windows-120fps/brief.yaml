@@ -1,0 +1,52 @@
+# The brief for videos/windows-120fps: what the video may claim, each claim with its source.
+product: Roomler
+about: one open-source product for remote desktop from any browser, a private WireGuard mesh between your machines, and team chat and video calls
+end_title: roomler.ai
+end_subtitle: Open source · self-hostable
+presenters:
+  - "A = goran-r5-redpolo: his photo at home (the r5 close framing) with the navy jacket edited to a fitted red polo on a somewhat more athletic build (Qwen-Image-Edit-2511 --keep-framing, seed 62), his ORIGINAL head pasted back at native size (head-paste.ts, cut at the chin): 0 of 33,000 face pixels differ from the photo's"
+  - "B = goran-mint-redpolo: his library photo (the mint framing), the pale-mint polo edited to red on somewhat more toned arms and shoulders (Qwen-Image-Edit-2511 --keep-framing, seed 76, after a first prompt came out bodybuilder-like), his ORIGINAL head pasted back the same way: 0 of 50,400 face pixels differ"
+  - "Voice: goran3f (his cloned voice, the pace he chose on 2026-10-25)"
+footage:
+  - what: "Terminal 1 on the laptop: wgcrate.exe (Windows' own capture interval: the default, 1 ms, the default again), then roomlerd's own capture bench at a 120 fps target"
+    source: real commands with their real output and timing (term.ts capture, 2026-10-26 00:23:30-54Z). wgcrate.exe is a ~200-line diagnostic by the FR-119 session that only calls the Windows API and moves a small window once per composition; the bench is roomlerd's `wgc_rate_bench` (an ignored test from #2915, the P2b-15 build that shipped in agent 0.4.172), run while `wgcrate.exe motion 20` slid a white square across the screen. No GPU job, clock lock or screen recorder ran during the take
+  - what: "Terminal 2: the laptop's own roomlerd log of the 2026-10-25 22:41Z session, read by fps-story.sh"
+    source: the worker log of agent 0.4.172 on the laptop; fps-story.sh (C:/dev/_tools/fr119) prints the decision, the frames sent per 2 s (the DC pump heartbeat's counters) and the trial's verdict, and no session id, address or path
+  - what: "The budget bars: 11.9 ms and 5.9 ms a frame against the 8.3 ms a 120 fps frame gets"
+    source: generated from FR-119 §4.12's stage_bench table (HEVC 4:4:4 at 120 fps, p50 before and after, 600 frames, release build, on this laptop)
+claims:
+  - claim: "My laptop's screen runs at 240 Hz"
+    source: the bench take ("refresh Some(240) Hz"); https://github.com/gjovanov/roomler-ai/blob/master/docs/fr/FR-119-high-refresh-streaming.md §4.12 (2560x1600 at 240 Hz)
+  - claim: "Remote desktop to it, from my MacBook, ran at fifty-six frames a second"
+    source: FR-119 §4.15 and §8, the third Windows run (agent 0.4.171, 2026-10-25): "Chrome peaked at 56 fps"
+  - claim: "Windows' default: fifty-nine; one millisecond: a hundred and ninety-five; the default again: fifty-nine"
+    source: terminal 1 (59.2 / 195.0 / 59.0 fps, with the screen changing 186-214 times a second throughout)
+  - claim: "On this laptop, Windows hands a capture app at most one frame every sixteen milliseconds, unless the app asks for more"
+    source: terminal 1's first line ("default MinUpdateInterval = 160000 x100ns (16.000 ms)"); FR-119 §4.15. Read on this machine only; the video names no Windows version
+  - claim: "Roomler never asked; now it does, only above sixty, so a normal session doesn't change"
+    source: FR-119 §4.15 (P2b-15, #2915, agent 0.4.172): the interval is lowered only above 60, for roomlerd's own capture session; at 60 and below Windows' default stays
+  - claim: "Roomler's own capture, asked for a hundred and twenty: a hundred and eighteen"
+    source: terminal 1 ("target 120 fps, refresh Some(240) Hz: delivered 118.4 fps (592 in 5 s)"). Capture only, said as such: not an end-to-end rate
+  - claim: "The graphics card has more than one video engine; Roomler splits each frame between two of them and prepares the frames faster; in the bench a frame went from twelve milliseconds to six"
+    source: FR-119 §4.12 (P2b-10 NVENC split_encode_mode, two strips on this GPU; P2b-11 the conversion); stage_bench HEVC 4:4:4 at 120 fps, p50 11.85 -> 5.91 ms
+  - claim: "At a hundred and twenty frames a second, each frame gets eight milliseconds"
+    source: 1000 / 120 = 8.3 ms
+  - claim: "End to end, from my MacBook's browser on my home network, peer to peer: during its ten-second trial the laptop sent a hundred and five frames a second"
+    source: terminal 2, the trial's verdict at 2026-10-25 22:41:38Z (1058 frames in 10.004 s of motion = 105.7 fps, AV1 on av1_nvenc, the GPU at its own clocks); the session's carrier overlay_direct (the Mac's own relay over the WireGuard mesh, direct on the LAN; no server relay carried media), read by the FR-119 session
+  - claim: "Then Roomler stepped back to sixty, on purpose"
+    source: terminal 2 (verdict Failed, want 60); FR-119 §4.15 and AC6 (a host that cannot sustain 120 falls back to 60 after its trial)
+  - claim: "The graphics card had clocked itself down to save power; one frame in ten took about eleven milliseconds to encode, more than the eight it gets"
+    source: terminal 2 (p90 encode 10.887 ms; the trial fails when the p90 crosses 90 % of 8.3 ms); the FR-119 session's read of the GPU in power state P5 at the time
+  - claim: "With the clocks pinned by hand it held about a hundred and ten for a minute"
+    source: the FR-119 session's run after 2026-10-25 22:44:50Z (nvidia-smi clock locks, approved by the operator, reset afterwards): agent side 98-117 fps for about a minute, mostly 108-113. The viewer's own 114 is NOT used: no picture of it exists
+  - claim: "Teaching Roomler to do that by itself is the next fix; shown when proven"
+    source: P2b-16 (#2920, merged 2026-10-26 00:46Z, not yet released or field-verified). The video claims nothing about it working
+  - claim: "This video runs at thirty frames a second"
+    source: the render (1920x1080 at 30 fps)
+  - claim: "Open source, and you can host it yourself"
+    source: https://github.com/gjovanov/roomler-ai#readme
+not_claimed:
+  - "120 or 144 fps delivered end to end on Windows"
+  - "that Roomler fixed a Windows limit, or which Windows versions ship the 16 ms default"
+  - "any latency figure; any other GPU, panel, viewer browser or network than the ones named"
+qa: []
