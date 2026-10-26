@@ -1,0 +1,75 @@
+# Podcast pilot (v1, approved by Goran 2026-10-26 ~13:35Z; the host named Helen): a studio conversation. HELEN, an invented host (an
+# original face and a synthetic voice, NOT anyone's likeness), interviews GORAN, Roomler's author, as his red-polo
+# athletic avatar in his cloned voice (goran3f). Two cameras, host and guest, a wide two-shot for the open and the
+# close, and demo inserts from earlier videos where the conversation points at something.
+# Facts: the origin story is his own blog post (ui/blog/posts/self-hosted-teamviewer-alternative.md); the numbers
+# are the published videos' (wayland-asahi, macbook-120fps, windows-120fps, mesh-network) and their briefs.
+# Lines starting with # are the shots, not spoken. Numbers are spelled out for the voices.
+#
+# [Wide two-shot: the studio, two microphones, Helen and Goran at the desk. A title: "The Roomler Podcast".]
+helen: Welcome to the show. My guest today built a remote desktop because his wife swore at TeamViewer. Goran, welcome.
+goran3f: Thanks for having me. And for the record, she still swears. Just not at remote desktops anymore.
+# [Host cam.]
+helen: So what is Roomler, in one breath?
+# [Guest cam.]
+goran3f: One open-source app that replaces three. Remote desktop from any browser, like TeamViewer. A private network between your machines, like Tailscale. And chat and video calls for the team, like Teams.
+# [Host cam.]
+helen: Three products. One person. Did you sleep at all?
+goran3f: My wife says no. She also says she wrote the specification. Which is fair.
+# [Host cam.]
+helen: Take me back to that night. What actually happened?
+# [Guest cam.]
+goran3f: Friday night. I'm coding, she's next to me, doing accounting on an office computer through TeamViewer. The only machine with the license.
+goran3f: She closes the session by accident. Nobody at the office to send her a new password. The work waits until Monday.
+goran3f: And then I heard what I can only describe as hot, spicy, juicy swearing. Followed by one calm sentence: there must be a better way.
+# [Host cam.]
+helen: And you thought, challenge accepted.
+goran3f: I had built video conferencing before. A remote desktop is the same machinery pointed one way. How hard could it be?
+helen: Famous last words.
+goran3f: Seven months later, she and a few colleagues were the first users. So technically, my first customer is also my toughest critic.
+# [Host cam.]
+helen: Let's talk speed, because your videos keep showing frame counters. A MacBook at a hundred and twenty frames a second. Why does anyone need that?
+# [Guest cam, then the MacBook footage at 120 fps with its counter (macbook-120fps).]
+goran3f: Nobody needs it. Everybody wants it. It's a sports car for your mouse pointer.
+goran3f: On the Mac it's almost unfair. Apple's media engine encodes a whole frame in about six milliseconds. At a hundred and twenty frames a second, you only get eight.
+# [Host cam.]
+helen: And Windows? I assume Windows made it difficult.
+# [Guest cam, then the windows-120fps terminal: 59 versus 195 fps.]
+goran3f: Windows had a hidden speed limit. It hands a screen-capture app one frame every sixteen milliseconds, unless the app asks for more.
+goran3f: Like a waiter who won't bring the menu until you wave. So now Roomler waves.
+goran3f: Then the graphics card tried to save power in the middle of a session, so Roomler now keeps it awake while it streams fast. A hundred and twelve frames a second, proven in the log.
+# [Host cam.]
+helen: And Linux? I saw fifty-six frames on a Mac mini running Linux.
+# [Guest cam, then the wayland-asahi footage: the KDE desktop, the counter at 56.]
+goran3f: That one is my favorite, because it's the hardest. Asahi Linux has no video encoder driver for that chip yet, so every frame is encoded by the CPU.
+goran3f: Roomler just tells the processor: while I'm encoding, give me the fast core. Fifty-six frames a second, with no hardware help at all.
+helen: So the CPU does the heavy lifting and you take the credit.
+goran3f: That's called management.
+# [Host cam.]
+helen: You said private network. Show me the Tailscale part.
+# [The mesh-network footage, full frame, Goran's voice over it: the peers table, direct and relayed rows.]
+goran3f: Every machine I own, in one list. The MacBook is direct, a few milliseconds away. The servers are direct across the internet.
+goran3f: And when there's no direct path, it goes through a relay on port four four three, the same door every website uses. Slower, but it connects.
+# [The relay diagram, then SSH into the Mac with no sshd and no open port.]
+helen: Can the relay read my traffic?
+goran3f: No. It forwards encrypted WireGuard packets it can't open. Think of a postman who can't read the letters.
+helen: A very frustrated postman.
+goran3f: And over that network, SSH and remote commands, with no SSH server and no open port. Off by default, and the server can't switch them on by itself. The machine has to say yes first.
+# [Host cam.]
+helen: Who is this actually for?
+# [Guest cam, with use-case cards appearing beside him.]
+goran3f: Anyone who has ever driven across town to fix a computer. Families helping families. Small teams with a few servers and no IT department.
+goran3f: People who want their home machine from the office, and it should feel local. And companies that want to host the whole thing themselves, with no license key and no device limit.
+# [Host cam.]
+helen: Okay, I'm convinced. How do I install it? Please tell me it's not a weekend project.
+# [Guest cam, then the installer wizard and the one-line script side by side.]
+goran3f: Two ways. On Windows there's a setup wizard: pick a role, click next, done. For people who like clicking.
+goran3f: And for people who like typing, one line in a terminal, on Windows, Linux or macOS. You paste a one-time enrollment code from your account, and the machine shows up in your devices.
+helen: And which kind are you?
+goran3f: I wrote both, so whichever one breaks, I'm the one to blame.
+# [Wide two-shot.]
+helen: Last question. Anything you want to say to your wife?
+goran3f: Thank you for swearing. It was the most productive product meeting I've ever attended.
+# [End card with both: roomler.ai, open source, self-hostable.]
+helen: Roomler is open source, and you can host it yourself. Links are below. Thanks for listening.
+goran3f: And if you try it and want to swear, swear at me. I'm listening.

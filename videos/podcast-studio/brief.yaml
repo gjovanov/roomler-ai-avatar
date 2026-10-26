@@ -1,0 +1,61 @@
+# The brief for videos/podcast-studio: what the video may claim, each claim with its source.
+product: Roomler
+about: one open-source product for remote desktop from any browser, a private WireGuard mesh between your machines, and team chat and video calls
+format: a podcast-style conversation, 16:9; two framed cameras over a studio (the host left, the guest right, the one speaking live), demos full frame, cards for "what is it" and "who is it for", a title and an end card
+end_title: roomler.ai
+end_subtitle: Open source · self-hostable
+presenters:
+  - "Host = helen: an INVENTED woman (Z-Image-Turbo seed 31 of a text prompt that names no one, cropped 710x1065 so her face is about as large as the guest's). No real person's likeness was used or asked of the model; any resemblance is unintended. Voice: a synthetic Kokoro-82M preset (af_heart, Apache-2.0) as the VibeVoice prompt; no real person's voice"
+  - "Guest = goran-studio-r5: goran-r5-redpolo (his photo, the red-polo athletic edit of video #1) put in front of an EMPTY studio plate made from shot 82 of goran-studio-redpolo (Qwen-Image-Edit-2511 --keep-framing with the plate as image 2, seed 101), his ORIGINAL head pasted back through a person mask (head-paste-seg.py), so the face is the photo's own. Goran on 2026-10-26: 'the other goran athletic avatar with red polo (the one with less hair) ... use 82 also the same background'"
+  - "Voice: goran3f (his cloned voice)"
+footage:
+  - what: "The MacBook at 120 fps with the viewer's counter (macbook-120fps's vis-drag)"
+    source: the macbook-120fps video's screen track (published 2026-10-24), real speed
+  - what: "Windows' capture interval terminal: 59.2 / 195.0 / 59.0 fps (windows-120fps's p1-t1)"
+    source: the windows-120fps video's terminal 1 (published 2026-10-26), real commands and timing
+  - what: "The 0.4.174 trial: gpu-clock pin, 112.4 fps, Proven (windows-120fps's p4b-t3)"
+    source: the windows-120fps video's terminal 3
+  - what: "The Mac mini on Asahi Linux, KDE Plasma on Wayland, the counter at 56 fps (macbook-120fps's vis-hook)"
+    source: the wayland-asahi recording as cut for the macbook-120fps hook (both published)
+  - what: "roomler peers: every machine in one list, direct rows and one relayed row (mesh-network's p1-t1)"
+    source: the mesh-network video's terminal (published 2026-10-25, the same names and overlay addresses on screen there)
+  - what: "roomler exec and roomler ssh to the MacBook (mesh-network's p4-t2)"
+    source: the mesh-network video's terminal
+  - what: "The relay diagram (laptop, relay on port 443, server; sealed packets)"
+    source: generated for this video (visuals/relay.html); an illustration, no chip
+  - what: "The install page: Windows' 'Roomler Setup' and the one-line commands for Windows, Linux and macOS, highlighted in turn"
+    source: a signed-out screenshot of https://roomler.ai/#download taken 2026-10-26 ~13:48Z (analytics blocked), cropped and enlarged; the highlights are drawn on it
+claims:
+  - claim: "One open-source app that replaces three: remote desktop from any browser like TeamViewer, a private network like Tailscale, chat and video calls like Teams"
+    source: https://github.com/gjovanov/roomler-ai#readme
+  - claim: "The origin: a Friday night; his wife doing accounting on an office computer through TeamViewer, the only machine with the license; the session closed by accident; nobody to send a new password; the work waited until Monday; hot, spicy, juicy swearing; 'there must be a better way'"
+    source: his blog post, ui/blog/posts/self-hosted-teamviewer-alternative.md (also on Medium)
+  - claim: "He had built video conferencing before; seven months later she and a few colleagues were the first users"
+    source: the same post ("I had built video conferencing tools before", "Fast forward 7 months ... My wife and few of her colleagues being the first users")
+  - claim: "Apple's media engine encodes a whole frame in about six milliseconds; at a hundred and twenty frames a second each frame gets eight"
+    source: the macbook-120fps brief; FR-119 §2 (6.3 ms, hevc_videotoolbox, 3024x1964; 120 fps needs at most 8.3 ms a frame)
+  - claim: "Windows hands a screen-capture app one frame every sixteen milliseconds unless the app asks for more; Roomler now asks"
+    source: the windows-120fps brief (terminal 1; FR-119 §4.15, P2b-15, agent 0.4.172)
+  - claim: "The graphics card clocked down to save power mid-session; Roomler now keeps it awake while it streams fast; a hundred and twelve frames a second, proven in the log"
+    source: the windows-120fps brief (FR-119 P2b-16, agent 0.4.174; terminal 3: 112.4 fps, verdict Proven)
+  - claim: "Fifty-six frames a second on a Mac mini running Linux; no hardware encoder there, every frame encoded by the CPU; Roomler asks for the fast core while encoding"
+    source: the wayland-asahi brief (FR-112, 0.4.142: 56.2 fps of VP9 4:4:4 in software; FR-112 §2 'The clock': Roomler asks the scheduler for performance while encoding); FR-112's title, '60 fps without a hardware encoder'
+  - claim: "Every machine in one list; the MacBook direct a few milliseconds away; the servers direct across the internet; without a direct path, a relay on port 443"
+    source: the mesh-network brief and its terminal (direct rows 4-33 ms; one row relay:derp/tcp); docs/overlay-nat-traversal.md (DERP over WSS :443 is the floor)
+  - claim: "The relay forwards encrypted WireGuard packets it can't open"
+    source: docs/overlay-communication.md (the server coordinates but never carries plaintext; DERP relays only see ciphertext)
+  - claim: "SSH and remote commands over the mesh with no SSH server and no open port; off by default; the server can't switch them on by itself, the machine has to say yes first"
+    source: docs/roomler-ssh.md (no sshd, no bound port); docs/fleet-rpc.md (exec_enabled, the device-side gate); docs/remote-config.md (remote configuration is a device-local opt-in, default off: 'remotely configurable without making it server-configurable')
+  - claim: "Self-hosted: no license key and no device limit"
+    source: the blog post ('Self-hosted — unlimited devices, no licence key'); the self-host image carries no plan module (docs/modular-monolith.md)
+  - claim: "On Windows a setup wizard (pick a role, next, done); or one line in a terminal on Windows, Linux or macOS with a one-time enrollment code from your account"
+    source: the roomler.ai #download section ('Paste one command, or on Windows run the graphical installer. Enrollment tokens come from your workspace'); docs/installation.md (the unified wizard's roles; enrollment tokens are single-use)
+  - claim: "Open source, and you can host it yourself"
+    source: https://github.com/gjovanov/roomler-ai#readme
+invented:
+  - "The two lines about his wife ('she still swears ... just not at remote desktops anymore', 'she also says she wrote the specification') are jokes Goran approved with the script on 2026-10-26, not quotes"
+  - "Helen and the studio are invented; the conversation is scripted"
+not_claimed:
+  - "any number not on screen in an earlier video; any latency figure; that the relay is as fast as a direct path ('slower, but it connects')"
+disclosure:
+  - "The end card says 'AI-generated hosts · real screen recordings'; no presenter label on the tiles (as Goran chose on 2026-10-23); each platform's AI-content flag when publishing"
