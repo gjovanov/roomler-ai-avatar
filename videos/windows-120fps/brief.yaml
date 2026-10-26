@@ -53,4 +53,8 @@ not_claimed:
   - "144 fps (its trial failed at 128.4 fps the same morning), or a full 120 fps delivered: the proven trial measured 112.4"
   - "that Roomler fixed a Windows limit, or which Windows versions ship the 16 ms default"
   - "any latency figure; any other GPU, panel, viewer browser or network than the ones named"
-qa: []
+qa:
+  - "check.ts (2026-10-26 ~10:00Z): specs PASS (h264 1920x1080 at 30 fps, 150.6 s, aac 48 kHz); loudness PASS (-14.7 LUFS integrated, -1.9 dBTP); privacy PASS (151 frames OCR'd at 1 fps, whole and in three bands, against the deny list, e-mail and IPv4 patterns: 0 hits)"
+  - "Narration: Whisper writes numbers as digits, so the word check was run at --min-heard 0 and every line's transcript read by hand; three lines were reworded where a number or phrase was misheard ('a hundred and eighteen' heard as 180, 'peer to peer' heard as 'here to here')"
+  - "No presenter label on screen (storyboard labels empty), as Goran asked on 2026-10-23: disclose the AI avatar through each platform's AI-content flag when publishing"
+  - "Terminal 1's bench result line was broken where the output paused for 6 s, as a terminal of that width wraps it (capture-wrapped.json); every other line is the capture as printed"
