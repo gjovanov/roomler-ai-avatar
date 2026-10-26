@@ -18,7 +18,7 @@ footage:
   - what: "The Mac mini on Asahi Linux, KDE Plasma on Wayland, the counter at 56 fps (macbook-120fps's vis-hook)"
     source: the wayland-asahi recording as cut for the macbook-120fps hook (both published)
   - what: "roomler peers: every machine in one list, direct rows and one relayed row (mesh-network's p1-t1)"
-    source: the mesh-network video's terminal (published 2026-10-25, the same names and overlay addresses on screen there)
+    source: the mesh-network video's terminal (published 2026-10-25); here every machine name carries a box with a generic role and both address columns a box
   - what: "roomler exec and roomler ssh to the MacBook (mesh-network's p4-t2)"
     source: the mesh-network video's terminal
   - what: "The relay diagram (laptop, relay on port 443, server; sealed packets)"
