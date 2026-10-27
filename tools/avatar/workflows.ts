@@ -93,6 +93,15 @@ export function qwenEdit(o: EditOptions): Workflow {
 export interface TalkOptions {
   /** Staged file names (comfy.stage). */
   image: string;
+  /** The clip's first frame, when it is not the portrait: the last frame of the same presenter's clip before it,
+   *  so a chain of clips keeps its pose at every cut. The portrait (`image`) still gives the CLIP identity embeds. */
+  startImage?: string;
+  /** A staged multi-frame image (APNG) of the previous clip's last frames up to its cut (4k+1 of them): the clip
+   *  CONTINUES their motion, while the portrait (`image`) stays the reference of every window. Needs the local
+   *  wrapper patch (`motion_frames` on WanVideoImageToVideoMultiTalk, 2026-10-27). The audio must lead in by as many
+   *  frames, and the wrapper drops them from the output. Unlike `startImage`, it does not make a generated frame the
+   *  next clip's reference, so a chain of clips does not drift. */
+  motionFrames?: string;
   audio: string;
   width: number;
   height: number;
@@ -150,6 +159,14 @@ export function infiniteTalk(o: TalkOptions): Workflow {
       class_type: "WanVideoClipVisionEncode",
       inputs: { clip_vision: ["clipv", 0], image_1: ["fit", 0], strength_1: 1, strength_2: 1, crop: "center", combine_embeds: "average", force_offload: true, tiles: 0, ratio: 0.5 },
     },
+    ...(o.startImage ? {
+      startimg: { class_type: "LoadImage", inputs: { image: o.startImage } },
+      startfit: {
+        class_type: "ImageResizeKJv2",
+        inputs: { image: ["startimg", 0], width: o.width, height: o.height, upscale_method: "lanczos", keep_proportion: "crop", pad_color: "0, 0, 0", crop_position: "center", divisible_by: 16, device: "cpu" },
+      },
+    } : {}),
+    ...(o.motionFrames ? { motionimg: { class_type: "LoadImage", inputs: { image: o.motionFrames } } } : {}),
     audio: { class_type: "LoadAudio", inputs: { audio: o.audio } },
     w2v: { class_type: "Wav2VecModelLoader", inputs: { model: "wav2vec2-chinese-base_fp16.safetensors", base_precision: "fp16", load_device: "main_device" } },
     embeds: {
@@ -178,7 +195,7 @@ export function infiniteTalk(o: TalkOptions): Workflow {
     },
     i2v: {
       class_type: "WanVideoImageToVideoMultiTalk",
-      inputs: { vae: ["vae", 0], width: o.width, height: o.height, frame_window_size: 81, motion_frame: 9, force_offload: false, colormatch: "disabled", start_image: ["fit", 0], tiled_vae: false, clip_embeds: ["clipenc", 0], mode: "infinitetalk", output_path: "" },
+      inputs: { vae: ["vae", 0], width: o.width, height: o.height, frame_window_size: 81, motion_frame: 9, force_offload: false, colormatch: "disabled", start_image: [o.startImage ? "startfit" : "fit", 0], tiled_vae: false, clip_embeds: ["clipenc", 0], mode: "infinitetalk", output_path: "", ...(o.motionFrames ? { motion_frames: ["motionimg", 0] } : {}) },
     },
     sample: {
       class_type: "WanVideoSampler",

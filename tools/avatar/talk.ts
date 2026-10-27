@@ -10,7 +10,7 @@
 //   bun tools/avatar/talk.ts <narration dir> <out dir> [--size 640x640] [--steps 6] [--shift 11]
 //        [--seed 7] [--swap 8] [--attn sageattn] [--only 0,3] [--idle 0] [--tail 1.0]
 //        [--face <speaker>=<presenter>[,<presenter>...]] [--clips <dir>] [--reuse <old talk.json>]
-//        [--audio-scale 1] [--group-gap <s>] [--dry]
+//        [--audio-scale 1] [--group-gap <s>] [--negative-extra <terms>] [--start <png> | --motion <apng>] [--dry]
 //
 // --group-gap: one presenter's consecutive turns whose silence between them is shorter than this
 // become ONE clip. A single presenter cut into a clip per line resets to the portrait's pose at every
@@ -23,7 +23,7 @@ import { createHash } from "node:crypto";
 import { join, resolve } from "node:path";
 import { alive, files, free, loadPresenters, OUTPUT, portraitFile, run, stage } from "./comfy.ts";
 import { groupTurns, pinnedSegments, segments } from "./lib.ts";
-import { encodePrompt, infiniteTalk } from "./workflows.ts";
+import { encodePrompt, infiniteTalk, NEGATIVE } from "./workflows.ts";
 
 const args = process.argv.slice(2);
 const opt = (n: string, d: string) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : d; };
@@ -44,10 +44,28 @@ const [W, H] = opt("size", "640x640").split("x").map(Number);
 // --audio-scale: how hard the speech drives the clip (1 = as trained; workflows.ts). Part of the cache
 // key only when it is not 1, so clips rendered before the option existed keep their names.
 const audioScale = Number(opt("audio-scale", "1"));
-const P = { model: "infinitetalk-single-fp8+lightx2v-r64", w: W, h: H, steps: Number(opt("steps", "6")), shift: Number(opt("shift", "11")), seed: Number(opt("seed", "7")), ...(audioScale !== 1 ? { audioScale } : {}) };
+// --negative-extra "<terms>": appended to the negative prompt (e.g. "looking to the side, touching face"); part of the
+// cache key only when given.
+const negExtra = opt("negative-extra", "");
+const P = { model: "infinitetalk-single-fp8+lightx2v-r64", w: W, h: H, steps: Number(opt("steps", "6")), shift: Number(opt("shift", "11")), seed: Number(opt("seed", "7")), ...(audioScale !== 1 ? { audioScale } : {}), ...(negExtra ? { negExtra } : {}) };
+// --start <image>: the first frame of the one clip --only names, instead of the portrait (the last frame of the same
+// presenter's clip before it: a chain keeps its pose at every cut). The portrait still gives the identity embeds.
+const startFile = opt("start", "") ? resolve(opt("start", "")) : "";
+if (startFile && !existsSync(startFile)) throw new Error(`--start ${startFile}: no such image`);
+// --motion <apng>: the one --only clip CONTINUES these frames (the same presenter's previous clip, its last 4k+1 frames
+// up to the cut on screen) while the portrait stays the reference of every window (workflows.ts motionFrames; needs the
+// wrapper patch). The audio leads in with as many frames of silence (what the presenter did then: listened, or paused
+// mid-gap), and the wrapper drops those frames, so the clip still starts at its segment's start. Unlike --start, no
+// generated frame becomes a reference: a chain of --start clips drifted further from the face at every link.
+const motionFile = opt("motion", "") ? resolve(opt("motion", "")) : "";
+if (motionFile && !existsSync(motionFile)) throw new Error(`--motion ${motionFile}: no such image`);
+if (motionFile && startFile) throw new Error("--motion and --start exclude each other");
+const LEAD = motionFile ? Number(Bun.spawnSync(["ffprobe", "-v", "error", "-count_frames", "-select_streams", "v:0", "-show_entries", "stream=nb_read_frames", "-of", "csv=p=0", motionFile], { stdout: "pipe" }).stdout.toString().trim()) : 0;
+if (motionFile && !(LEAD >= 1 && (LEAD - 1) % 4 === 0)) throw new Error(`--motion ${motionFile}: ${LEAD} frames, needs 4k+1`);
 // Blocks kept in system RAM and streamed to the GPU: 8 leaves a 24 GB card headroom (0 fills it).
 const swap = Number(opt("swap", "8")), attention = opt("attn", "sageattn") as "sdpa" | "sageattn";
 const only = new Set(opt("only", "").split(",").filter(Boolean).map(Number));
+if ((startFile || motionFile) && only.size !== 1) throw new Error("--start and --motion need exactly one --only segment");
 const sha = (b: Uint8Array | string) => createHash("sha256").update(b).digest("hex");
 
 function ff(a: string[]) {
@@ -96,7 +114,9 @@ for (const s of segs) {
   if (only.size && !only.has(s.k)) continue;
   const wav = join(out, "audio", `seg${String(s.k).padStart(2, "0")}.wav`);
   // apad: the last segment runs past the voice into the tail.
-  ff(["-i", voice, "-ss", s.start.toFixed(3), "-t", (s.end - s.start).toFixed(3), "-af", "apad", "-t", (s.end - s.start).toFixed(3), "-ac", "1", "-ar", "16000", wav]);
+  if (!LEAD) ff(["-i", voice, "-ss", s.start.toFixed(3), "-t", (s.end - s.start).toFixed(3), "-af", "apad", "-t", (s.end - s.start).toFixed(3), "-ac", "1", "-ar", "16000", wav]);
+  else ff(["-f", "lavfi", "-t", (LEAD / 25).toFixed(3), "-i", "anullsrc=r=16000:cl=mono", "-ss", s.start.toFixed(3), "-t", (s.end - s.start).toFixed(3), "-i", voice,
+    "-filter_complex", `[1:a]aresample=16000,aformat=channel_layouts=mono,apad,atrim=0:${(s.end - s.start).toFixed(3)}[s];[0:a][s]concat=n=2:v=0:a=1[a]`, "-map", "[a]", "-ac", "1", "-ar", "16000", wav]);
   jobs.push({ name: `seg${String(s.k).padStart(2, "0")}-${s.speaker}`, speaker: s.speaker, face: faceAt[s.turn], wav, seconds: +(s.end - s.start).toFixed(3), seed: P.seed + s.k, reuse: reused.get(s.k) });
 }
 // --idle 3.24 renders one idle loop per presenter (81 frames, one window, driven by silence) for
@@ -122,7 +142,7 @@ if (!args.includes("--dry") && !(await alive())) throw new Error("ComfyUI is not
 // once ran out of memory. A cached prompt is a no-op; --encode-only stops here.
 if (!args.includes("--dry")) {
   for (const f of [...new Set(jobs.map((j) => j.face))]) {
-    const r = await run(encodePrompt(reg[f].talk_prompt), { label: `encode ${f}` });
+    const r = await run(encodePrompt(reg[f].talk_prompt, negExtra ? `${NEGATIVE}, ${negExtra}` : undefined), { label: `encode ${f}` });
     console.log(`prompt ${f.padEnd(12)} encoded or cached in ${r.seconds.toFixed(0)} s`);
   }
   if (args.includes("--encode-only")) process.exit(0);
@@ -133,7 +153,7 @@ for (const j of jobs) {
   const pr = reg[j.face];
   const portrait = portraitFile(pr.portrait);
   if (!existsSync(portrait)) throw new Error(`${j.face}: no portrait at ${portrait} (tools/avatar/portrait.ts render + pick)`);
-  const key = sha(JSON.stringify({ P, prompt: pr.talk_prompt, portrait: sha(readFileSync(portrait)), audio: sha(readFileSync(j.wav)), seed: j.seed })).slice(0, 10);
+  const key = sha(JSON.stringify({ P, prompt: pr.talk_prompt, portrait: sha(readFileSync(portrait)), audio: sha(readFileSync(j.wav)), seed: j.seed, ...(startFile ? { start: sha(readFileSync(startFile)) } : {}), ...(motionFile ? { motion: sha(readFileSync(motionFile)) } : {}) })).slice(0, 10);
   const clip = join(clipsDir, `${j.name}-${key}.mp4`);
   manifest.clips[j.name] = { speaker: j.speaker, face: j.face, portrait: sha(readFileSync(portrait)), seconds: j.seconds, clip, key, ...(manifest.clips[j.name]?.key === key ? { render_s: manifest.clips[j.name].render_s } : {}) };
   if (existsSync(clip)) {
@@ -153,7 +173,8 @@ for (const j of jobs) {
   }
   if (args.includes("--dry")) { console.log(`${j.name.padEnd(18)} would render ${j.seconds.toFixed(2)} s`); continue; }
   const wf = infiniteTalk({
-    image: stage(portrait), audio: stage(j.wav), width: P.w, height: P.h, maxFrames: Math.ceil(j.seconds * 25),
+    image: stage(portrait), ...(startFile ? { startImage: stage(startFile) } : {}), ...(motionFile ? { motionFrames: stage(motionFile) } : {}), ...(negExtra ? { negative: `${NEGATIVE}, ${negExtra}` } : {}),
+    audio: stage(j.wav), width: P.w, height: P.h, maxFrames: Math.ceil(j.seconds * 25) + LEAD,
     seed: j.seed, steps: P.steps, shift: P.shift, prompt: pr.talk_prompt, prefix: `talk/${j.name}-${key}`, blocksToSwap: swap, attention, keepLoaded: !args.includes("--offload"),
   });
   // Every clip reloads the model (the node pack's design). A model kept on the GPU from the clip before

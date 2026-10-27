@@ -56,6 +56,8 @@ base() {
     if [ -n "$c" ]; then git -C "$AV/$dir" fetch --quiet origin && git -C "$AV/$dir" checkout --quiet "$c"; fi
     echo "$dir @ $(git -C "$AV/$dir" rev-parse --short HEAD)"
   done
+  # The wrapper's InfiniteTalk can continue a previous clip (motion_frames; talk.ts --motion): patches/ says why.
+  python3 "$HERE/patches/wanvideo-motion-frames.py" "$AV/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper"
   [ -x "$PY" ] || python3 -m venv "$AV/venv"
   "$PY" -m pip install --quiet --upgrade pip wheel
   "$PY" -m pip install --quiet torch torchvision torchaudio --index-url "$TORCH_INDEX"
