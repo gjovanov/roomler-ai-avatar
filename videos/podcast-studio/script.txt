@@ -37,7 +37,7 @@ helen: Oh, I get it. Six milliseconds of work in an eight millisecond slot. And 
 goran3f: Windows had a hidden speed limit. It hands a screen-capture app one frame every sixteen milliseconds, unless the app asks for more.
 helen: So the fix was simply to ask?
 goran3f: Yeah, that's right. Like a waiter who won't bring the menu until you wave. So now Roomler waves.
-helen: Hahaha.
+helen: Hahaha! That's brilliant.
 # [The 0.4.174 trial: the clock pin, 112.4 fps, Proven.]
 goran3f: Then the graphics card tried to save power in the middle of a session, so Roomler now keeps it awake while it streams fast. A hundred and twelve frames a second, proven in the log.
 helen: Nice. On the flip side, I saw fifty-six frames on a Mac mini running Linux. What happened there?
