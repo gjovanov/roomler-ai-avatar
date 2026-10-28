@@ -22,7 +22,7 @@ goran3f: My wife says no. She also says she should get more credit for writing t
 helen: Yeah, I'm on her side on this one. Alright, take me back to that Friday night. What actually happened?
 goran3f: Friday night. I'm coding, she's next to me, doing accounting on an office computer through TeamViewer. The only machine with the license.
 goran3f: She closes the session by accident. Nobody at the office to send her a new password. The work waits until Monday.
-helen: Oh, noooo!
+helen: Oh, no...
 goran3f: Oh, yes! And then I heard what I can only describe as hot, spicy, juicy swearing. Followed by one calm sentence: there must be a better way!!!
 helen: And you thought, challenge accepted.
 goran3f: Well, I had built video conferencing before. A remote desktop is the same machinery pointed one way. How hard could it be?
@@ -63,7 +63,7 @@ goran3f: Anyone who has ever driven across town to fix a computer. Families help
 goran3f: People who want their home machine from the office, and it should feel local. And companies that want to host the whole thing themselves, with no license key and no device limit.
 helen: Okay, I'm convinced. Moving on to the practical part. How do I install it? Please tell me it's not a weekend project.
 # [The real install page, highlighted in turn.]
-goran3f: Two ways. On Windows there's a setup wizard: pick a role, click next, done. For people who like clicking.
+goran3f: Two ways. There's a setup wizard for Windows, Linux and macOS: pick a role, click next, done. For people who like clicking.
 goran3f: And for people who like typing, one line in a terminal, on Windows, Linux or macOS. You paste a one-time enrollment code from your account, and the machine shows up in your devices.
 helen: And which kind are you?
 goran3f: I wrote both, so whichever one breaks, I'm the one to blame.
