@@ -220,3 +220,15 @@ terminal only. Expect the odd false positive from OCR (a window's title-bar butt
 name): look at the frame before you decide.
 
 Then watch every frame. Then publish with the platforms' AI flags set (README, rules).
+
+## The studio conversation format
+
+A podcast-style conversation (a host interviews a guest on two framed cameras, cards and demos full
+frame, a title and an end card over music) shares steps 1 to 4 and 8 with this page and replaces 5 to 7:
+`plan.json` takes the place of the shots and the storyboard, and `tools/podcast/chain.ts` renders every
+talking and listening clip, each presenter's clips chained so that a cut never jumps back to the
+portrait's pose; `tools/podcast/compose.ts` composes, `tools/podcast/seams.ts` measures the cuts.
+`tools/voice/qa-lines.ts` and `tools/voice/fix-lines.ts` read every narration line back and re-voice the
+doubtful ones. The plan's fields, the run in order and the numbers from the pilot
+([videos/podcast-studio](../videos/podcast-studio/)) are in the skill's
+[references/podcast.md](../.claude/skills/avatar-video/references/podcast.md).

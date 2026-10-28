@@ -66,7 +66,11 @@ his portraits are in [`presenters/`](presenters/), and his voice prompt is not
 | A talking clip per turn (or per block of one presenter's lines), cut in the silence between them | `tools/avatar/talk.ts` | InfiniteTalk on Wan2.1-I2V-14B (Apache-2.0) | GPU |
 | The 9:16 and the 16:9 (a corner bubble, or a tutor beside the screen), captions, cards and disclosure | `tools/avatar/compose.ts`, `compose16.ts` | | CPU |
 | A thumbnail | `tools/avatar/cover.ts` | | CPU |
+| A studio conversation (a podcast): listening clips, every presenter's clips chained so no cut jumps, two cameras with cards and demos full frame, the cuts measured | `tools/podcast/` (`chain.ts`, `listen.ts`, `compose.ts`, `seams.ts`) | InfiniteTalk | GPU, then CPU |
+| Every narration line read back against the script, and the doubtful ones re-voiced by measurement | `tools/voice/qa-lines.ts`, `tools/voice/fix-lines.ts` | Whisper, VibeVoice | GPU |
+| Cards, titles and diagrams from HTML pages | `tools/avatar/html-frames.ts` | chrome-headless-shell | CPU |
 | Specs, loudness, and what the recording must not show | `tools/check.ts` | tesseract (optional) | CPU |
+| A share copy for review | `tools/share.ts` | | CPU |
 
 Claude is the only LLM in the pipeline, and it writes no word of the narration: it plans what the viewer
 sees.
@@ -118,7 +122,8 @@ trap we hit, including the one that crashed a laptop.
 - [docs/expectations.md](docs/expectations.md): time, quality, hardware, failure modes
 - [docs/real-person.md](docs/real-person.md): your own face and voice, consent, and disclosure
 - [`.claude/skills/avatar-video`](.claude/skills/avatar-video/SKILL.md): a Claude Code skill that drives
-  the whole process, from the script to the checks
+  the whole process, from the script to the checks, in both formats; the studio conversation format is
+  in its [`references/podcast.md`](.claude/skills/avatar-video/references/podcast.md)
 - [`.claude/skills/demo-first-scriptwriter`](.claude/skills/demo-first-scriptwriter/SKILL.md): a Claude
   Code skill that writes a one-presenter product demo: the proof on screen first, the explanation after,
   every claim scoped to its evidence

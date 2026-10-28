@@ -7,17 +7,19 @@ description: Make a video with AI presenters using this repository (roomler-ai-a
 
 The repository's docs are the reference: `docs/run.md` for every step and option, `docs/expectations.md`
 for times and known traps, `docs/real-person.md` before any real person's face or voice. This skill is
-the order of work and the judgement calls. It also carries what the docs do not hold yet: the studio
-conversation format ([references/podcast.md](references/podcast.md)) and the lessons of its pilot,
-`videos/podcast-studio`, which went through five editions (2026-10-26 to 10-28) before it was published.
+the order of work and the judgement calls. It also carries the studio conversation format (its tools in
+`tools/podcast/`, its details in [references/podcast.md](references/podcast.md)) and the lessons of its
+pilot, `videos/podcast-studio`, which went through five editions (2026-10-26 to 10-28) before it was
+published.
 
 ## Pick the format
 
 | | Beside a recording | Studio conversation |
 |---|---|---|
 | The picture | the screen recording, with the speaker in a bubble (16:9), as two call tiles (9:16) or in a tutor panel | host left, guest right on two framed cameras over a blurred studio; the speaker live, the listener in a listening clip of their own; cards; demos full frame; a title and an end card over music |
-| The plan | `shots.ts`, then `storyboard.ts` (Claude) | `plan.json`, written by hand: one beat for each turn that is not on the two cameras |
-| The compose | `compose16.ts`, `compose.ts` | the pilot's own composer (references/podcast.md) |
+| The plan | `shots.ts`, then `storyboard.ts` (Claude) | `plan.json`, written by hand: the speakers, the clip settings, and one beat for each turn that is not on the two cameras |
+| The clips | `talk.ts` | `tools/podcast/chain.ts`: talking clips (`talk.ts`) and listening clips (`tools/podcast/listen.ts`), chained |
+| The compose | `compose16.ts`, `compose.ts` | `tools/podcast/compose.ts`, then `tools/podcast/seams.ts` |
 | Worked examples | `videos/wayland-asahi`, `videos/mesh-network` | `videos/podcast-studio` |
 
 Most steps are shared; where the formats differ, the step says so.
@@ -98,8 +100,8 @@ bun tools/voice/pitch.ts out/narration
   one in its place. A line that comes back silent ("no speech found": a bare laugh, a drawn-out "noooo")
   gets the next seed.
 
-Then check every line, in this order. The pilot's `qa-lines.ts` and `fix-lines.ts` do it by measurement
-(references/podcast.md):
+Then check every line, in this order. `tools/voice/qa-lines.ts` and `tools/voice/fix-lines.ts` do it by
+measurement (give them the product's names Whisper misspells with `--fuzzy`; references/podcast.md):
 
 1. **Whisper reads each line back:** the script's words in order (90% of them, 75% for a line of four
    words or fewer), the first two words heard (a garbled opening), no two words heard before the line's
@@ -160,10 +162,11 @@ from your descriptions, and once assumed typos that were never typed). A plan th
 back to Claude once by itself; one refused after that prints the rules it broke: run it again, or fix
 the shots. After a re-voice, `storyboard.ts retime` keeps an approved plan.
 
-**Studio conversation:** `talk.ts --dry` (section 6) gives the segments; then write `plan.json`
-(references/podcast.md): a beat for each turn that shows cards or a demo, with its visual, its chip and
-its privacy boxes. Place beats by the words their line starts with, not by turn number, so an inserted
-reaction never moves a demo onto the wrong line.
+**Studio conversation:** write `plan.json`'s settings first (the speakers, their faces, the clip
+settings: references/podcast.md), get the segments with `bun tools/podcast/chain.ts plan.json --dry`
+(`talk.ts --dry` with the plan's settings), then add the beats: one for each turn that shows cards or a
+demo, with its visual, its chip and its privacy boxes. Place a beat by the words its line starts with
+(`"line"`), not by turn number, so an inserted reaction never moves a demo onto the wrong line.
 
 ## 6 · The clips
 
@@ -189,10 +192,11 @@ bun tools/avatar/talk.ts out/narration out/talk
   edit --wh 832x1248`), a talk prompt for a calm face and presentation gestures, and `talk.ts --size
   512x768 --group-gap 1.0 --audio-scale 0.9`, so each block is one continuous take. Plan with the same
   `storyboard.ts --group-gap 1.0`: one clip has one layout.
-- **The studio format** also renders a listening clip for whoever is not speaking, and chains each
-  presenter's clips so that no cut jumps back to the portrait's pose (`talk.ts --motion`, with the
-  wrapper patch in `tools/avatar/patches/`): references/podcast.md. Its chain starts ComfyUI itself,
-  under the cap, and would use a ComfyUI already running as it is: stop yours before the chain.
+- **The studio format** renders its clips with `bun tools/podcast/chain.ts plan.json`: a talking clip
+  for whoever speaks and a listening clip for the other one, each presenter's clips chained so that no
+  cut jumps back to the portrait's pose (`--motion`, with the wrapper patch in `tools/avatar/patches/`):
+  references/podcast.md. The chain starts ComfyUI itself, under the cap, and replaces one that is
+  already running.
 
 ## 7 · The machine
 
@@ -204,23 +208,23 @@ in the end:
   never lower it. Start a clip only with room to spare (the pilot waited for 20 GB, up to 45 minutes)
   rather than let the guard stop it: a clip that fails ends its presenter's chain (the next one starts
   from the portrait), a clip that waits does not.
-- **ComfyUI runs under its memory cap, or not at all.** `comfy-server.sh` caps it only when
-  `systemctl --user is-system-running` succeeds; otherwise it prints "WITHOUT a memory cap" and runs
-  uncapped (it then kept 26 GB of model files mapped and starved the host). That check also fails on
-  `degraded`, which one failed unit causes, and a ComfyUI scope the cap itself killed is such a unit.
-  So read the start message. If it is uncapped: `systemctl --user reset-failed` and start again, or
-  start it as root inside a system scope:
-  `systemd-run --scope -p MemoryMax=24G -p MemorySwapMax=0 runuser -u <user> -- env HOME=/home/<user> AVATAR_WORK=<work dir> bash <repo>/tools/avatar/comfy-server.sh start`
-  (inside that scope it may still print "WITHOUT a memory cap": the scope is the cap).
-- **Restart ComfyUI after every clip that rendered.** The cap bounds the VM only. CUDA's pinned host
-  memory and the GPU's spill into shared system memory sit on the Windows side, and PyTorch keeps them
-  until the process exits (`/free` does not give them back). Over a chain they piled up to about 60 GB;
-  stopping ComfyUI returned them at once.
+- **ComfyUI runs under its memory cap, or not at all.** Uncapped, it once kept 26 GB of model files
+  mapped and starved the host. `comfy-server.sh` caps it in a systemd user scope when the user manager
+  answers, `degraded` included (one failed unit makes it so, and a ComfyUI scope the cap itself killed
+  is such a unit: until 2026-10-28 that alone dropped the cap); it also clears its own failed scopes
+  before it starts. `comfy-server.sh cap` says what `start` would do, and the start message says it
+  again. With no user manager at all, start it as root inside a system scope:
+  `tools/avatar/comfy-capped.sh <user> 24G <work dir>`. `tools/podcast/chain.ts` picks between the
+  two by itself, and refuses to run uncapped unless given `--uncapped`.
+- **Restart ComfyUI after every clip that rendered** (the chain does). The cap bounds the VM only.
+  CUDA's pinned host memory and the GPU's spill into shared system memory sit on the Windows side, and
+  PyTorch keeps them until the process exits (`/free` does not give them back). Over a chain they
+  piled up to about 60 GB; stopping ComfyUI returned them at once.
 - **Drop the VM's page cache** every 30 s while clips render and builds share the VM
-  (`sync; echo 1 > /proc/sys/vm/drop_caches` as root): WSL kept 25 GB of cache and never gave it back
-  by itself.
-- **A GPU shared with other jobs:** a hold file that the runner checks between clips; while it exists,
-  ComfyUI is stopped and the run waits.
+  (`tools/avatar/dropcache-loop.sh` as root, which the chain runs under WSL): WSL kept 25 GB of cache
+  and never gave it back by itself.
+- **A GPU shared with other jobs:** `AVATAR_GPU_HOLD` names a file that the other job creates when it
+  needs the GPU; the chain checks it between clips, stops ComfyUI while it exists, and waits.
 - **A killed session can leave its renders running.** When Claude Code stops background tasks because
   the host is low on memory, their bun and python children live on: find them by command line before
   starting anything, and restart a stopped run only with the person's OK. `comfy-server.sh stop`
@@ -240,7 +244,9 @@ bun tools/avatar/cover.ts --storyboard out/storyboard.json --out out/cover.png
 For tall tutor clips, add `--layout tutor` to `compose16.ts`: the recording on the left, the presenter
 in a tall panel on the right.
 
-**Studio conversation:** the pilot's composer, then its measure of every cut (references/podcast.md).
+**Studio conversation:** `bun tools/podcast/compose.ts plan.json` (beside the video it also writes
+`<out>.srt`, the captions for an upload; `--parts a-b` previews a few segments with their sound), then
+`bun tools/podcast/seams.ts <video> plan.json` for the cuts (references/podcast.md).
 
 **Both:**
 
@@ -254,10 +260,10 @@ bun tools/check.ts out/video.mp4 --deny terms.txt --json out/check.json
   its place ("work laptop", "server").
 - A privacy hit: look at the frame before deciding. OCR misreads (a window's title-bar buttons once read
   as a city's name). Never weaken the check to make a hit go away; an allowed term is the person's call.
-- For review, give the person the full-quality file and a share copy of at most 28 MiB: 1280x720, x264
-  two-pass at `min(3500, (28 x 8 x 1024 x 1024 / <seconds> - 96000) / 1000)` kbit/s for the video, AAC
-  at 96 kbit/s, `-movflags +faststart`.
-- Captions for an upload: the narration's `captions.srt`, shifted by the title's length.
+- For review, give the person the full-quality file and a share copy: `bun tools/share.ts <video>` (720
+  on the short side, two-pass under 28 MiB, into `share/` beside the video).
+- Captions for an upload: the narration's `captions.srt`, shifted by any title before the narration (the
+  studio composer writes them).
 
 ## 9 · Review rounds, and re-voicing a few lines
 
@@ -275,10 +281,9 @@ and the person's own rewording of lines that sounded wrong. For each round:
      new lengths, so the rest keeps its timing to the millisecond; or move everything after the change
      by a multiple of 0.1 s, a whole number of frames at 30 fps and of milliseconds.
   3. Reuse every clip whose turns, takes (byte-identical line files), frame count and start are
-     unchanged: `talk.ts --alias <old clip>` for one segment, or the studio chain's
-     `--alias-from <old talk dir>` (its `--plan-only` prints what will be reused and rendered, with no
-     GPU, but never run it beside a chain that is rendering: references/podcast.md). The pilot's last
-     two editions rendered 26 of their 72 clips.
+     unchanged: `talk.ts --alias <old clip>` for one segment, or `tools/podcast/chain.ts plan.json
+     --alias-from <old talk dir>` (with `--plan-only` it prints what it will reuse and render, without
+     touching the GPU). The pilot's last two editions rendered 26 of their 72 clips.
 - **Show the change:** a before/after of the cut in question, a preview of a few segments with their
   sound, a listening copy of the re-voiced lines.
 
