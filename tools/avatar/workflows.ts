@@ -214,3 +214,43 @@ export function infiniteTalk(o: TalkOptions): Workflow {
     },
   };
 }
+
+/** The negative prompt of a listening clip: what a listener's face must not do, then the usual quality terms. */
+export const LISTEN_NEGATIVE = "talking, speaking, open mouth, lip movement, mouthing words, touching face, touching nose, hand on face, hand to mouth, hand to chin, rubbing chin, scratching, fidgeting, raising hands, waving, pointing, repetitive gestures, looking away, looking to the side, glancing sideways, turning the head sideways, profile view, bright tones, overexposed, static, blurred details, subtitles, style, works, paintings, images, still picture, overall gray, worst quality, low quality, JPEG compression residue, ugly, incomplete, extra fingers, poorly drawn hands, poorly drawn faces, deformed, disfigured, misshapen limbs, fused fingers, messy background, three legs, many people in the background, walking backwards";
+
+export interface ListenOptions {
+  /** Staged file names (comfy.stage): the portrait, and optionally the previous clip's last 4k+1 frames to continue. */
+  image: string;
+  motionFrames?: string;
+  width: number;
+  height: number;
+  /** The clip's length in frames at 25 fps (plus the motion frames' lead-in, which the wrapper drops). */
+  frames: number;
+  prompt: string;
+  seed: number;
+  prefix: string;
+}
+
+/** A LISTENING clip: InfiniteTalk driven by MultiTalkSilentEmbeds, the model's trained "not speaking" input, instead of
+ *  speech. Driven by silent audio, InfiniteTalk keeps the mouth busy (docs/real-person.md); with the trained silence
+ *  the mouth stays shut, and the prompt moves the face (the podcast pilot's listeners, 2026-10-26). */
+export function listenClip(o: ListenOptions): Workflow {
+  return {
+    ...(o.motionFrames ? { motionimg: { class_type: "LoadImage", inputs: { image: o.motionFrames } } } : {}),
+    vae: { class_type: "WanVideoVAELoader", inputs: { model_name: "Wan2_1_VAE_bf16.safetensors", precision: "bf16" } },
+    clipv: { class_type: "CLIPVisionLoader", inputs: { clip_name: "clip_vision_h.safetensors" } },
+    img: { class_type: "LoadImage", inputs: { image: o.image } },
+    fit: { class_type: "ImageResizeKJv2", inputs: { image: ["img", 0], width: o.width, height: o.height, upscale_method: "lanczos", keep_proportion: "crop", pad_color: "0, 0, 0", crop_position: "center", divisible_by: 16, device: "cpu" } },
+    clipenc: { class_type: "WanVideoClipVisionEncode", inputs: { clip_vision: ["clipv", 0], image_1: ["fit", 0], strength_1: 1, strength_2: 1, crop: "center", combine_embeds: "average", force_offload: true, tiles: 0, ratio: 0.5 } },
+    embeds: { class_type: "MultiTalkSilentEmbeds", inputs: { num_frames: o.frames } },
+    talk: { class_type: "MultiTalkModelLoader", inputs: { model: "Wan2_1-InfiniteTalk-Single_fp8_e4m3fn_scaled_KJ.safetensors" } },
+    lora: { class_type: "WanVideoLoraSelect", inputs: { lora: "lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors", strength: 1, low_mem_load: false, merge_loras: false } },
+    swap: { class_type: "WanVideoBlockSwap", inputs: { blocks_to_swap: 8, offload_img_emb: false, offload_txt_emb: false, use_non_blocking: true, vace_blocks_to_swap: 0, prefetch_blocks: 1, block_swap_debug: false } },
+    model: { class_type: "WanVideoModelLoader", inputs: { model: "Wan2_1-I2V-14B-480p_fp8_e4m3fn_scaled_KJ.safetensors", base_precision: "fp16_fast", quantization: "disabled", load_device: "offload_device", attention_mode: "sageattn", block_swap_args: ["swap", 0], lora: ["lora", 0], multitalk_model: ["talk", 0] } },
+    text: { class_type: "WanVideoTextEncodeCached", inputs: { model_name: "umt5-xxl-enc-bf16.safetensors", precision: "bf16", positive_prompt: o.prompt, negative_prompt: LISTEN_NEGATIVE, quantization: "disabled", use_disk_cache: true, device: "gpu" } },
+    i2v: { class_type: "WanVideoImageToVideoMultiTalk", inputs: { vae: ["vae", 0], width: o.width, height: o.height, frame_window_size: 81, motion_frame: 9, force_offload: false, colormatch: "disabled", start_image: ["fit", 0], tiled_vae: false, clip_embeds: ["clipenc", 0], mode: "infinitetalk", output_path: "", ...(o.motionFrames ? { motion_frames: ["motionimg", 0] } : {}) } },
+    sample: { class_type: "WanVideoSampler", inputs: { model: ["model", 0], image_embeds: ["i2v", 0], steps: 6, cfg: 1, shift: 11, seed: o.seed, force_offload: true, scheduler: "dpm++_sde", riflex_freq_index: 0, text_embeds: ["text", 0], multitalk_embeds: ["embeds", 0], rope_function: "comfy" } },
+    frames: { class_type: "WanVideoPassImagesFromSamples", inputs: { samples: ["sample", 0] } },
+    save: { class_type: "VHS_VideoCombine", inputs: { images: ["frames", 0], frame_rate: 25, loop_count: 0, filename_prefix: o.prefix, format: "video/h264-mp4", pingpong: false, save_output: true, pix_fmt: "yuv420p", crf: 8, save_metadata: false, trim_to_audio: false } },
+  };
+}
