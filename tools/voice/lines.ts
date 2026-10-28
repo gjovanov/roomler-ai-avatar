@@ -81,11 +81,16 @@ const use = new Map((opt("use", "") ?? "").split(",").filter(Boolean).map((s) =>
 const pauses = new Map((opt("pause", "") ?? "").split(",").filter(Boolean).map((s) => { const [n, v] = s.split(":"); return [Number(n), Number(v)] as const; }));
 const minHeard = Number(opt("min-heard", "0.6")); // 0 for spelled-out deliveries ("Shooow me") Whisper cannot match
 const between = Number(opt("between", "0.8")), same = Number(opt("same", "0.45")), lead = Number(opt("lead", "0.5"));
+// --safe-end 5,7: those lines end at the LATER of the energy detector's end and Whisper's last word, padded with silence
+// when that runs into the clip's end, so the end fade lands on silence. A soft ending ("-ogy", "-ened") sits under the
+// energy threshold: the trim cut it and the fade took the rest ("I like that anal", podcast v4, 2026-10-28). Opt-in per
+// line, so every other line stays byte-identical (a re-voiced narration keeps its clips).
+const safeEnd = new Set((opt("safe-end", "") ?? "").split(",").filter(Boolean).map(Number));
 const metaFile = join(out, "lines.json");
 const meta: Record<string, { seed?: string; cfg?: string; from?: string; heard: number; dur: number; trim: [number, number]; level: number }> =
   existsSync(metaFile) ? JSON.parse(readFileSync(metaFile, "utf8")) : {};
 
-const clips: Array<{ file: string; a: number; b: number; s: number; e: number; gainDb: number }> = [];
+const clips: Array<{ file: string; a: number; b: number; s: number; e: number; gainDb: number; pad?: number }> = [];
 for (const [i, t] of turns.entries()) {
   const n = i + 1, clip = join(dir, `l${n}.wav`);
   const fresh = only.has(n) || !existsSync(clip) || use.has(n);
@@ -110,10 +115,16 @@ for (const [i, t] of turns.entries()) {
   const x = pcm16k(clip), dur = seconds(clip);
   const spans = speechSpans(x, 16000);
   if (!spans.length) throw new Error(`line ${n}: no speech found in the clip`);
-  const s = spans[0][0], e = spans[spans.length - 1][1];
-  const a = Math.max(0, s - 0.06), b = Math.min(dur, e + 0.22);
+  const s = spans[0][0];
+  let e = spans[spans.length - 1][1], pad = 0;
+  if (safeEnd.has(n)) {
+    const w = JSON.parse(run(linuxBash(RENDER_SH, "align", toLinux(clip)), `line ${n}'s last word`)).words ?? [];
+    if (w.length) e = Math.max(e, w[w.length - 1].end);
+    pad = Math.max(0, e + 0.22 - dur);
+  }
+  const a = Math.max(0, s - 0.06), b = Math.min(dur + pad, e + 0.22);
   const level = speechLevel(x.subarray(Math.floor(a * 16000), Math.floor(b * 16000)), 16000);
-  clips.push({ file: clip, a, b, s, e, gainDb: -20 - level });
+  clips.push({ file: clip, a, b, s, e, gainDb: -20 - level, ...(pad > 0 ? { pad } : {}) });
   meta[n] = { ...(use.has(n) ? { from: use.get(n) } : fresh ? { seed, cfg } : { seed: meta[n]?.seed, cfg: meta[n]?.cfg, from: meta[n]?.from }), heard, dur: +dur.toFixed(3), trim: [+a.toFixed(3), +b.toFixed(3)], level: +level.toFixed(1) };
   console.log(`line ${String(n).padStart(2)} ${t.speaker.padEnd(8)} heard ${heard.toFixed(2)}  speech ${s.toFixed(2)}-${e.toFixed(2)} of ${dur.toFixed(2)} s  level ${level.toFixed(1)} dBFS  ${t.text.slice(0, 40)}`);
 }
@@ -127,7 +138,7 @@ const seq: string[] = [silence(lead)];
 clips.forEach((c, i) => {
   inputs.push("-i", c.file);
   const len = c.b - c.a, fo = Math.min(0.08, len / 4);
-  parts.push(`[${i}:a]aformat=channel_layouts=mono,atrim=${c.a.toFixed(3)}:${c.b.toFixed(3)},asetpts=N/SR/TB,aresample=48000,volume=${c.gainDb.toFixed(2)}dB,afade=t=in:d=0.015,afade=t=out:st=${(len - fo).toFixed(3)}:d=${fo.toFixed(3)}[c${i}]`);
+  parts.push(`[${i}:a]aformat=channel_layouts=mono,${c.pad ? `apad=pad_dur=${(c.pad + 0.05).toFixed(3)},` : ""}atrim=${c.a.toFixed(3)}:${c.b.toFixed(3)},asetpts=N/SR/TB,aresample=48000,volume=${c.gainDb.toFixed(2)}dB,afade=t=in:d=0.015,afade=t=out:st=${(len - fo).toFixed(3)}:d=${fo.toFixed(3)}[c${i}]`);
   seq.push(`[c${i}]`);
   timed.push({ ...turns[i], start: +(at + (c.s - c.a)).toFixed(3), end: +(at + (c.e - c.a)).toFixed(3) } as TimedTurn);
   at += len;
