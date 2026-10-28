@@ -6,7 +6,7 @@
 # (ComfyUI has no authentication). Under WSL, mirrored or localhost forwarding makes 127.0.0.1:8188
 # reachable from Windows, where the bun tools run.
 #
-#   comfy-server.sh start | stop | status | log [n]
+#   comfy-server.sh start | stop | status | log [n] | cap     (cap: what start would do about the memory cap)
 #
 # AVATAR_HOME      the setup.sh install       (default ~/roomler-avatar)
 # AVATAR_WORK      ComfyUI's input/output     (default: under WSL, %USERPROFILE%\roomler-avatar-work
@@ -34,23 +34,39 @@ WORK="${AVATAR_WORK:-$(default_work)}"
 
 running() { [ -f "$PIDF" ] && kill -0 "$(cat "$PIDF")" 2>/dev/null; }
 
+# ⚠️ A hard memory cap, so an overreach kills ComfyUI and nothing else. Uncapped, the 11 GB text
+# encoder loading beside the 14B model and a parallel build ran a WSL VM out of memory with its swap
+# already full, and WSL stopped answering until the distro was terminated. Inside this scope the
+# kernel reclaims ComfyUI's own page cache first and then OOM-kills ComfyUI alone; MemorySwapMax=0
+# keeps it from thrashing swap.
+# The user manager counts as there when it is `degraded` too: one failed unit is enough for that, and a
+# ComfyUI scope this very cap once killed is such a unit (2026-10-28: `is-system-running` failed on it,
+# and ComfyUI would have started uncapped). AVATAR_CAPPED_BY: the caller already put this process in a
+# scope of its own (tools/avatar/comfy-capped.sh, a root system scope), so no second cap is needed.
+cap_plan() {
+  CAP=(); CAP_NOTE=""
+  if [ -n "${AVATAR_CAPPED_BY:-}" ]; then CAP_NOTE="capped by the calling scope ($AVATAR_CAPPED_BY)"; return; fi
+  local state=""
+  if command -v systemd-run >/dev/null; then state="$(systemctl --user is-system-running 2>/dev/null || true)"; fi
+  case "$state" in
+    running|degraded|starting)
+      CAP=(systemd-run --user --scope --quiet --unit "roomler-avatar-comfy-$$" -p "MemoryMax=${AVATAR_MEM_MAX:-26G}" -p MemorySwapMax=0)
+      CAP_NOTE="capped at ${AVATAR_MEM_MAX:-26G} in a systemd user scope (user manager: $state)" ;;
+    *) CAP_NOTE="WITHOUT a memory cap: no systemd user manager (${state:-none}); start it inside tools/avatar/comfy-capped.sh as root" ;;
+  esac
+}
+
 case "${1:-}" in
+  cap) cap_plan; echo "$CAP_NOTE" ;;
   start)
     if running; then echo "running (pid $(cat "$PIDF")) on 127.0.0.1:$PORT, work $WORK"; exit 0; fi
     [ -d "$AV/ComfyUI" ] || { echo "no ComfyUI at $AV: run setup.sh base" >&2; exit 2; }
     mkdir -p "$WORK/input" "$WORK/output" "$WORK/temp"
     cd "$AV/ComfyUI"
-    # ⚠️ A hard memory cap, so an overreach kills ComfyUI and nothing else. Uncapped, the 11 GB text
-    # encoder loading beside the 14B model and a parallel build ran a WSL VM out of memory with its swap
-    # already full, and WSL stopped answering until the distro was terminated. Inside this scope the
-    # kernel reclaims ComfyUI's own page cache first and then OOM-kills ComfyUI alone; MemorySwapMax=0
-    # keeps it from thrashing swap.
-    CAP=()
-    if command -v systemd-run >/dev/null && systemctl --user is-system-running >/dev/null 2>&1; then
-      CAP=(systemd-run --user --scope --quiet --unit "roomler-avatar-comfy-$$" -p "MemoryMax=${AVATAR_MEM_MAX:-26G}" -p MemorySwapMax=0)
-    else
-      echo "no systemd user manager: ComfyUI runs WITHOUT a memory cap" >&2
-    fi
+    # A failed scope of ours from an earlier run is what leaves the user manager degraded: clear it.
+    systemctl --user reset-failed 'roomler-avatar-comfy-*' >/dev/null 2>&1 || true
+    cap_plan
+    [ ${#CAP[@]} -gt 0 ] || [ -n "${AVATAR_CAPPED_BY:-}" ] || echo "ComfyUI runs $CAP_NOTE" >&2
     # --cache-classic: ComfyUI 0.42's default "RAM pressure" cache evicts node outputs whenever free
     # RAM falls under 10%, and WSL's free RAM is near zero most of the time (page cache): it evicted
     # the loaded model after every clip. Classic caching keeps an output until its inputs change.
@@ -59,7 +75,7 @@ case "${1:-}" in
       --disable-auto-launch --preview-method none --cache-classic ${AVATAR_COMFY_ARGS:-} > "$LOG" 2>&1 &
     echo $! > "$PIDF"
     for _ in $(seq 1 180); do
-      if curl -sf "http://127.0.0.1:$PORT/system_stats" >/dev/null; then echo "up (pid $(cat "$PIDF")) on 127.0.0.1:$PORT, work $WORK"; exit 0; fi
+      if curl -sf "http://127.0.0.1:$PORT/system_stats" >/dev/null; then echo "up (pid $(cat "$PIDF")) on 127.0.0.1:$PORT, work $WORK, $CAP_NOTE"; exit 0; fi
       running || { echo "ComfyUI exited during start:" >&2; tail -40 "$LOG" >&2; exit 1; }
       sleep 1
     done
@@ -69,5 +85,5 @@ case "${1:-}" in
     rm -f "$PIDF"; echo stopped ;;
   status) if running; then echo "running (pid $(cat "$PIDF")), work $WORK"; else echo "not running"; exit 1; fi ;;
   log) tail -"${2:-60}" "$LOG" ;;
-  *) echo "usage: comfy-server.sh start | stop | status | log [n]" >&2; exit 2 ;;
+  *) echo "usage: comfy-server.sh start | stop | status | log [n] | cap" >&2; exit 2 ;;
 esac
