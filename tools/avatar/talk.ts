@@ -60,12 +60,17 @@ if (startFile && !existsSync(startFile)) throw new Error(`--start ${startFile}: 
 const motionFile = opt("motion", "") ? resolve(opt("motion", "")) : "";
 if (motionFile && !existsSync(motionFile)) throw new Error(`--motion ${motionFile}: no such image`);
 if (motionFile && startFile) throw new Error("--motion and --start exclude each other");
+// --alias <clip>: for the one --only clip, an equivalent clip rendered before (the same lines and timing, the same start
+// or motion frames; only the narration's overall gain differs, which changes the audio bytes and so the key): used
+// instead of rendering when this key is not cached. The caller decides the equivalence (videos/podcast-studio chain.ts).
+const aliasFile = opt("alias", "") ? resolve(opt("alias", "")) : "";
+if (aliasFile && !existsSync(aliasFile)) throw new Error(`--alias ${aliasFile}: no such clip`);
 const LEAD = motionFile ? Number(Bun.spawnSync(["ffprobe", "-v", "error", "-count_frames", "-select_streams", "v:0", "-show_entries", "stream=nb_read_frames", "-of", "csv=p=0", motionFile], { stdout: "pipe" }).stdout.toString().trim()) : 0;
 if (motionFile && !(LEAD >= 1 && (LEAD - 1) % 4 === 0)) throw new Error(`--motion ${motionFile}: ${LEAD} frames, needs 4k+1`);
 // Blocks kept in system RAM and streamed to the GPU: 8 leaves a 24 GB card headroom (0 fills it).
 const swap = Number(opt("swap", "8")), attention = opt("attn", "sageattn") as "sdpa" | "sageattn";
 const only = new Set(opt("only", "").split(",").filter(Boolean).map(Number));
-if ((startFile || motionFile) && only.size !== 1) throw new Error("--start and --motion need exactly one --only segment");
+if ((startFile || motionFile || aliasFile) && only.size !== 1) throw new Error("--start, --motion and --alias need exactly one --only segment");
 const sha = (b: Uint8Array | string) => createHash("sha256").update(b).digest("hex");
 
 function ff(a: string[]) {
@@ -156,6 +161,12 @@ for (const j of jobs) {
   const key = sha(JSON.stringify({ P, prompt: pr.talk_prompt, portrait: sha(readFileSync(portrait)), audio: sha(readFileSync(j.wav)), seed: j.seed, ...(startFile ? { start: sha(readFileSync(startFile)) } : {}), ...(motionFile ? { motion: sha(readFileSync(motionFile)) } : {}) })).slice(0, 10);
   const clip = join(clipsDir, `${j.name}-${key}.mp4`);
   manifest.clips[j.name] = { speaker: j.speaker, face: j.face, portrait: sha(readFileSync(portrait)), seconds: j.seconds, clip, key, ...(manifest.clips[j.name]?.key === key ? { render_s: manifest.clips[j.name].render_s } : {}) };
+  if (aliasFile && !existsSync(clip) && !args.includes("--dry")) {
+    copyFileSync(aliasFile, clip);
+    manifest.clips[j.name].aliased_from = aliasFile;
+    console.log(`${j.name.padEnd(18)} cached (alias of ${aliasFile.split(/[\\/]/).pop()})`);
+    continue;
+  }
   if (existsSync(clip)) {
     if (j.reuse) manifest.clips[j.name].reused_from = j.reuse;
     console.log(`${j.name.padEnd(18)} cached`);
