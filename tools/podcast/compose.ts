@@ -7,7 +7,7 @@
 //
 // - two: two framed cameras over the blurred studio, the host on the left and the guest on the right. The one
 //   speaking is their talking clip in a ring of their colour; the listener is their own listening clip
-//   (tools/avatar/listen.ts: the model's trained silence, so no mouthing), a touch dimmer, else a dimmed still of
+//   (tools/podcast/listen.ts: the model's trained silence, so no mouthing), a touch dimmer, else a dimmed still of
 //   their portrait. Where the turn passes between two two-camera segments the dimming and the ring ease over 0.3 s,
 //   and the clips continue each other's pose (chain.ts), so the cut does not read as two scenes glued together.
 // - cards: the guest's camera on the right, a stack of cards on the left (an HTML page's states, each shown from

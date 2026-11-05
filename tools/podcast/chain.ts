@@ -3,7 +3,7 @@
 // Copyright (C) 2026 G ROX EOOD
 //
 // The studio conversation format's clips as CHAINS: each presenter's clips (talking, tools/avatar/talk.ts, and
-// listening, tools/avatar/listen.ts) render in timeline order, and each one CONTINUES the clip before it: its first
+// listening, tools/podcast/listen.ts) render in timeline order, and each one CONTINUES the clip before it: its first
 // window takes that clip's last 9 frames up to the cut on screen as motion frames (--motion, the wrapper patch in
 // tools/avatar/patches/), so the pose and the motion carry over a cut, while the portrait stays the reference of
 // every window. Before it, every clip started from the portrait, and each cut between a listening and a talking clip
@@ -42,7 +42,7 @@ if (!args[0] || args[0].startsWith("--")) { console.error("usage: chain.ts <plan
 const opt = (n: string) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : undefined; };
 const { plan, file: planFile, R } = loadPlan(args[0]);
 const ROOT = resolve(import.meta.dir, "..", "..");
-const TALK_TS = join(ROOT, "tools", "avatar", "talk.ts"), LISTEN_TS = join(ROOT, "tools", "avatar", "listen.ts");
+const TALK_TS = join(ROOT, "tools", "avatar", "talk.ts"), LISTEN_TS = join(ROOT, "tools", "podcast", "listen.ts");
 const COMFY = join(ROOT, "tools", "avatar", "comfy-server.sh"), CAPPED = join(ROOT, "tools", "avatar", "comfy-capped.sh");
 const DROPPER = join(ROOT, "tools", "avatar", "dropcache-loop.sh");
 const talkFile = R(plan.talk), talkDir = dirname(talkFile);
@@ -288,4 +288,8 @@ for (const s of segs) {
   }
 }
 await comfyDown();
+// The dropper is a live child, so bun waits for it, and the exit hook above only runs once bun is leaving: left to it,
+// the loop ran out its 12 h first (2026-11-04: "chain done" at 17:54Z, EXIT= only at 21:53Z once the loop was ended by
+// hand). unref() is no cure: bun then leaves at once, but a kill() from inside the exit hook does not take. Stop it here.
+stopDropper(); dropper?.kill();
 console.log(`=== ${stamp()} chain done (${n} clips)`);

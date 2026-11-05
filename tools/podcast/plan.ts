@@ -3,7 +3,7 @@
 //
 // The studio conversation format's plan (plan.json), read the same way by each of its tools: the composer
 // (compose.ts), the clip chain (chain.ts), the cut measure (seams.ts), the listening clips
-// (tools/avatar/listen.ts) and the stand-in clips (placeholder.ts). The format, the fields and the pilot it
+// (tools/podcast/listen.ts) and the stand-in clips (placeholder.ts). The format, the fields and the pilot it
 // came from: .claude/skills/avatar-video/references/podcast.md.
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
