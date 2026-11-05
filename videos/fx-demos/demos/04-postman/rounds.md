@@ -1,0 +1,3 @@
+Round 1, stills. Saw: far too dark, letters seen edge-on, the robot standing with his back to the desk, and blue streaks by the lamp. Fix: moonlight 500 to 5200, ground and wall lighter, letters facing the camera, the robot behind the belt facing us. The streaks were web pages whose children stayed visible: the hide now follows children.
+Round 3, render. Saw: at the push-in his head sat so low that the captions covered his eyes, the whole joke. Fix: camera 1.4 units further back and aimed 0.15 lower; his visor now sits at about 65% of the frame height. The last 127 frames re-rendered alone.
+Round 2, stills. Saw: the letter covering his face, so he could not act. Fix: scale 0.72, held at his side, his head turned 30 degrees towards it, and a larger cloud of steam.

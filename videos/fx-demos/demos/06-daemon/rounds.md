@@ -1,0 +1,4 @@
+Round 1, stills. Saw: the lid's logo standing on edge, squashed. Fix: rotation X -90, depth scale on the right axis.
+Round 1, stills. Saw: a bright solid teal hexagon under the plates. Fix: the base's edge light moved inside the base, so only its rim shows.
+Round 1, stills. Saw: the two illustrations glaring white, the lid out of frame. Fix: their plates at strength 0.5, the camera back and higher.
+Round 2, finished cut. Saw: seen at that angle the screens hardly read, the stack ran out of the frame, and two plates glared white. The white was a bug: the hexagon's UVs ran past the picture, so its edge pixels stretched. Fix, a rebuild: the plates slide out like drawers and fly into a honeycomb facing the camera, the hexagon's UVs fit the picture, one illustration in its dark form, the other brightened.

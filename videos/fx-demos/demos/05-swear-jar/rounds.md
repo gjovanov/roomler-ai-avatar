@@ -1,0 +1,5 @@
+Round 1, stills. Saw: by the freeze most glyphs had already landed, so nothing hung in the air. Fix: the "juicy" wave spread over 2.1 s, 240 glyphs, gravity 14 to 9, the dialog released at 17.72 s so its shards hang in the freeze too.
+Round 1, stills. Saw: a blue window plane competing with the glyphs. Fix: removed.
+Round 4, finished cut. Saw: the calm sentence was white on the white dialog, the film's whole turn, unreadable. Fix: moved to the dark top of the frame on a soft dark band. Saw: a strip of waiting glyphs along the top edge from the first second, which spoiled the storm. Fix: a glyph is hidden until it starts to fall (the first 545 frames and the front layer re-rendered). Saw: the tag's captions over the logo. Fix: between the logo and his head.
+Round 3, stills from the full render. Saw: the glyphs stayed on the finished logo, so the logo was not the pack's. Fix: each glyph melts into its stroke within half a second of landing, and the clean logo holds. The last 205 frames re-rendered alone.
+Round 2, layout. Decided: the glyphs in front of him stay in the back layer whenever they would cross his face, so nothing covers him mid-word.

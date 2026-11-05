@@ -1,0 +1,278 @@
+[
+ {
+  "id": "01-three-into-one",
+  "title": "Three Into One",
+  "kind": "Product launch film",
+  "len": "21 s, 16:9",
+  "poster": 13.6,
+  "log": "Three glass monoliths land, each lights up with its product (the third is a live team call), and they slam together into the logo.",
+  "wow": "At 16.6 s the three slabs fuse in one flash and the real hex-mesh logo rises out of the light as the music opens. Before it, the camera pushes into a call of eight people on the third slab while Goran says \"video calls\".",
+  "fit": "The product thesis, literally: one app that replaces three, in Goran's own sentence.",
+  "blender": [
+   "Slabs, floor mirror, power-on flicker, the merge, a ring running along the floor",
+   "Slab 3 shows the call's gallery with every camera a flat colour, so the floor mirrors a call",
+   "The 3D logo, built from the logo pack's own vector numbers"
+  ],
+  "hf": [
+   "Goran's lip-synced tile on top of the render, untouched",
+   "Word-by-word labels landing on his words, and the one-second pause you asked for after \"replaces three\"",
+   "The call on slab 3, pinned to the screen's tracked corners frame by frame: Goran speaking, Helen and six colleagues listening",
+   "Music entry, impacts, end card"
+  ],
+  "footage": [
+   "Podcast segment 3: voice and lip-synced clip, cut in its silence after \"three\"",
+   "MacBook 120 fps recording on slab 1",
+   "The real peers table, names and addresses boxed, on slab 2",
+   "Helen's listening clip from the podcast; michael, emma and the four new faces you picked, each a 5 s listening clip made for this call"
+  ],
+  "flags": [
+   "The call is staged: invented colleagues, listening clips made for it, and Goran's podcast clip. It is not a recording of a real Roomler call.",
+   "Four new invented faces now exist (A to D). They are invented from a text prompt, not anyone real; the end card's AI line covers them."
+  ]
+ },
+ {
+  "id": "02-sports-car",
+  "title": "A Sports Car for Your Mouse Pointer",
+  "kind": "Motion graphic around the avatars",
+  "len": "19 s, 16:9",
+  "poster": 10,
+  "log": "Goran's analogy, taken literally: a mouse pointer built as a sports car races across the real 120 fps recording and parks under its real fps counter.",
+  "wow": "The cursor car screaming over the colour bars at 'It's a sports car', then drifting to a stop right under the recording's own counter.",
+  "fit": "The frame rate is the headline of the remote desktop pillar. This makes it funny and shareable, and the road is the proof.",
+  "blender": [
+   "The car from the classic cursor outline: wheels, brake lights, '120' on its side",
+   "The recording as a wet road, motion blur, trails, a chase camera, a drift",
+   "A garage reveal, three spots snapping on"
+  ],
+  "hf": [
+   "Tiles on top, 'Nobody needs it' and 'Everybody wants it' landing on the words",
+   "A gauge sweeping to 120 fps, the script's number, under the real counter",
+   "Cut to the flat recording with the chip 'Real screen recording'",
+   "Music and effects dip under every voice (your note: you couldn't be heard while the arrow sped up)"
+  ],
+  "footage": [
+   "Podcast segments 14, 15, 16: voices, lip-synced clips, listening clip",
+   "MacBook 120 fps recording"
+  ],
+  "flags": [
+   "A playful take on the cursor: is the toy-car tone right for the brand?"
+  ]
+ },
+ {
+  "id": "03-one-second",
+  "title": "One Second, Sliced",
+  "kind": "Explainer, one idea",
+  "len": "23 s, 16:9",
+  "poster": 15.9,
+  "log": "The recording leaves the screen and becomes a flip book of 120 real frames on glass slabs. Then one second is laid out as 120 boxes you can count, and one of them opens into 6.3 ms of work in an 8.3 ms slot.",
+  "wow": "The 120 boxes arrive in exactly one second. On \"eight\" one turns amber and opens up, and while Helen says it, the work fills 6.3 of its 8.3 ms. At the end one frame slides out of the stack like a card from a deck.",
+  "fit": "It turns an engineering number (6 ms of work in an 8 ms slot) into something anyone can see. Strong for developers.",
+  "blender": [
+   "120 glass slabs, each with its own real frame",
+   "A plane of light passing through them",
+   "One continuous camera move that drifts behind the graphic, then the frame pulled out like a card"
+  ],
+  "hf": [
+   "'6 ms', '120' and '8 ms' landing on the words",
+   "One second as 120 boxes, each 6.3/8.3 full; one opens into the 8.3 ms slot and fills with 6.3 ms of work in true proportion",
+   "Helen's tile, captions, sound"
+  ],
+  "footage": [
+   "Podcast segments 17 (voice) and 18 (Helen)",
+   "120 consecutive frames of the MacBook recording"
+  ],
+  "flags": [
+   "The recording file runs at 30 fps, so the 120 slabs are 4 s of that file standing in for one second at 120 fps. An illustration, not a literal capture. Keep it, or say so on screen?"
+  ]
+ },
+ {
+  "id": "04-postman",
+  "title": "The Frustrated Postman",
+  "kind": "Faceless explainer",
+  "len": "29 s, 16:9",
+  "poster": 22,
+  "log": "A toy robot postman runs the relay. He shakes the letter, holds it to the lamp, picks at the seal, and cannot read a thing.",
+  "wow": "'A very frustrated postman': arms up, eyes go > <, steam from his cap, while the sealed letters keep sailing past him.",
+  "fit": "The hardest security claim in the product (the server never carries plaintext) as a story a child understands. A character Roomler could keep.",
+  "blender": [
+   "The whole diorama: wall, door 443, laptop, server, belt, lamp",
+   "The robot and every bit of his acting, by keyframes",
+   "Letters and web pages, steam, a comic push-in"
+  ],
+  "hf": [
+   "What the letter holds, as scramble that never resolves (the registry's matrix-decode idea)",
+   "Helen's tile on her two lines",
+   "Word-timed captions, servo and thud sounds on each action"
+  ],
+  "footage": [
+   "Podcast segments 30 to 33: one continuous 25 s of the real conversation"
+  ],
+  "flags": [
+   "A new mascot for the brand: yes, no, or a different design?"
+  ],
+  "pick": "Start here"
+ },
+ {
+  "id": "05-swear-jar",
+  "title": "Friday Night",
+  "kind": "Vertical comedy short",
+  "len": "34 s, 9:16",
+  "portrait": true,
+  "poster": 17.5,
+  "log": "The origin story: a session dialog dies under a storm of 3D swear glyphs. On 'followed by one calm sentence' time stops. Then the storm becomes the logo.",
+  "wow": "The freeze: hundreds of glyphs hanging in the air, the music gone, and Goran calmly saying 'there must be a better way' as the camera drifts through them.",
+  "fit": "Goran's real origin story, the most human thing about Roomler, made for TikTok and Shorts.",
+  "blender": [
+   "A real rigid-body simulation of about 320 glyphs and the dialog's shards, run once and saved",
+   "The freeze, the drift, each glyph flying to its place on the logo's strokes",
+   "A second layer of glyphs falling in front of him"
+  ],
+  "hf": [
+   "His clip cut out with remove-background, placed between the two 3D layers, never over his face",
+   "Big kinetic captions, the calm sentence behind his head",
+   "The music cut on the freeze"
+  ],
+  "footage": [
+   "Podcast segments 7, 8, 9 and 42: voices, lip-synced clips, listening clip"
+  ],
+  "flags": [
+   "The dialog is generic and carries no product's name or logo, but the story names TeamViewer in the full podcast. This cut does not."
+  ],
+  "pick": "Start here"
+ },
+ {
+  "id": "06-daemon",
+  "title": "The Daemon, Exploded",
+  "kind": "Apple-style teardown of software",
+  "len": "17 s, 16:9",
+  "poster": 11,
+  "log": "A machined hexagonal puck opens. Its plates slide out like drawers and fly into a honeycomb of five screens, the five jobs of one daemon, then slam back into one object.",
+  "wow": "The hard mechanical slam: five screens fly back into the puck in a third of a second, and it is one small object again.",
+  "fit": "'One daemon per machine' is the architecture's invariant and the reason it is one install, shown like hardware.",
+  "blender": [
+   "The puck, the plates, the machined metal with strips sweeping across it",
+   "Drawers, the honeycomb, footage on hexagonal screens",
+   "Every label anchor exported per frame"
+  ],
+  "hf": [
+   "Names landing on the clicks, tracked to the 3D",
+   "Two tiles with Helen's \"Did you sleep at all?\"",
+   "Sound carried by the mechanism"
+  ],
+  "footage": [
+   "Podcast segments 4 and 5 ('My wife says no.')",
+   "MacBook recording, boxed peers table, boxed SSH terminal"
+  ],
+  "flags": [
+   "'One daemon on every machine' and the five names are not in the approved script: they come from the architecture docs. Your wording?",
+   "Two plates carry the product's illustrations, one brightened and one switched to dark, because no tunnel recording exists in the library."
+  ]
+ },
+ {
+  "id": "07-keynote",
+  "title": "The Keynote He Never Gave",
+  "kind": "Avatar presenter on a 3D stage",
+  "len": "34 s, 16:9",
+  "poster": 27.8,
+  "log": "Goran's clip, cut out, behind a glass desk on a keynote stage, a curved LED wall behind him playing the real Linux recording.",
+  "wow": "'Some people call it management': the word MANAGEMENT slams up in 3D behind his head as the lights hit.",
+  "fit": "The podcast's clips look like a keynote without reshooting a thing. A format that can carry any future announcement.",
+  "blender": [
+   "The stage, the curved wall, the desk as its own layer, beams, a mirror floor",
+   "The flight over him to the wall's real '56 fps' counter",
+   "The 3D '56' and MANAGEMENT, behind him"
+  ],
+  "hf": [
+   "remove-background on his clips, tracked to the camera with a per-frame perspective matrix, on top of the render",
+   "Helen's tile tracked to the side screen",
+   "Captions, sound"
+  ],
+  "footage": [
+   "Podcast segments 25 to 29: voices, lip-synced clips, listening clips",
+   "The Asahi Linux recording on the wall"
+  ],
+  "flags": [
+   "This places your avatar on a stage you never stood on. Your face is untouched: the clip is only cut out and moved. For the 0.75 s as the camera leaves you, the end of your clip runs backwards. Comfortable with both?"
+  ]
+ },
+ {
+  "id": "08-across-town",
+  "title": "Across Town",
+  "kind": "Warm story that turns into scale",
+  "len": "28 s, 16:9",
+  "poster": 7,
+  "log": "A toy town at dusk. A car sets off to fix a computer, a teal arc does it first, the car turns back, and the camera lifts until the town is one point on the planet.",
+  "wow": "One unbroken camera move from a driveway to the whole Earth: the town really sits on the globe.",
+  "fit": "The families-helping-families story and the private mesh, in one shot. The warmest demo here: for Facebook and non-technical people.",
+  "blender": [
+   "The procedural town: houses, windows, trees, streets, a car with headlights",
+   "Tilt-shift focus, the U-turn gag",
+   "A planet of teal dots from real map data, arcs, an exponential camera lift"
+  ],
+  "hf": [
+   "Goran's small tile, the podcast's own card line",
+   "The boxed peers table overlay, captions, music"
+  ],
+  "footage": [
+   "Podcast segments 36 and 30",
+   "The real peers table, boxed"
+  ],
+  "flags": [
+   "The arcs are decoration, not real machines or places."
+  ]
+ },
+ {
+  "id": "09-inception",
+  "title": "Remote Inception",
+  "kind": "Perfect loop for feeds",
+  "len": "12 s loop, 16:9",
+  "loop": true,
+  "poster": 2,
+  "log": "A remote desktop inside a remote desktop inside a remote desktop, for ever: MacBook, Windows laptop, Mac mini on Linux, MacBook.",
+  "wow": "There is no last frame. The camera dives for ever and the film loops with no seam. Measured on the finished file, the step across the seam (SSIM 0.751) is the same as a normal step between two frames (0.750).",
+  "fit": "'Any machine, from any browser' as a hypnotic loop, with real recordings on every screen. Made to autoplay muted.",
+  "blender": [
+   "Three device models, each floating on the screen before it",
+   "A pure zoom on the chain's mathematical fixed point, so level 3 is exactly level 0"
+  ],
+  "hf": [
+   "Each device's name and real frame rate landing as it fills the frame",
+   "Music cut on a bar"
+  ],
+  "footage": [
+   "MacBook 120 fps recording",
+   "Windows laptop recording from the trailer",
+   "Asahi Linux recording"
+  ],
+  "flags": [
+   "The nesting is an effect: each screen is a real recording of its own, not one session inside another."
+  ],
+  "pick": "Start here"
+ },
+ {
+  "id": "10-hexflip",
+  "title": "Hex-Flip Trailer",
+  "kind": "Trailer and a reusable transition pack",
+  "len": "40 s, 16:9",
+  "poster": 8,
+  "log": "The six-minute podcast cut down to its best lines, glued by Roomler's own transition: the frame turns into hexagons that flip in a wave and carry the next clip on their backs.",
+  "wow": "The hex wave passing over a talking head and leaving the next scene behind it, in the logo's own shape.",
+  "fit": "This is the 'glue' you asked for, and it scales: the transitions are a pack that any future video can use with one command.",
+  "blender": [
+   "The hex-flip wave, slabs falling away and a fold, all rendered from the cut's own frames (emission only, no denoiser)"
+  ],
+  "hf": [
+   "The base cut: two framed tiles, full-frame recordings, captions",
+   "Two registry shader transitions, chromatic-radial-split and light-leak, beside the Blender ones, so you can compare the two tools",
+   "The final mix: picture cuts while the sound runs on"
+  ],
+  "footage": [
+   "Podcast segments 0, 15, 21, 22, 32, 33 and 42",
+   "The published podcast's title card and studio background",
+   "The sports car from demo 02 and the postman from demo 04"
+  ],
+  "flags": [
+   "A hex wave crosses your face for under a second at each seam: only before you speak, never mid-word."
+  ]
+ }
+]

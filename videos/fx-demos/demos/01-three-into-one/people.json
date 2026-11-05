@@ -1,0 +1,22 @@
+[
+ {
+  "name": "a",
+  "seed": 21,
+  "prompt": "Photograph of a friendly woman in her late forties, on a video call from her home office, looking straight into the camera with a relaxed, slight closed-mouth smile. Short silver-grey hair, dark-rimmed glasses, a navy cardigan over a white t-shirt. Head and shoulders, centred, eye level, room above her head. Behind her a bright kitchen with white cabinets and a few green plants, softly blurred. Soft daylight from a window on the left, natural skin texture with visible pores, shot like a good webcam on a 28mm lens at f/2.8, sharp focus on the eyes, realistic colour, no text, no logo."
+ },
+ {
+  "name": "b",
+  "seed": 21,
+  "prompt": "Photograph of a friendly Black man in his early forties, on a video call from a small office, looking straight into the camera with a relaxed, slight closed-mouth smile. Short black hair, a neatly trimmed beard, a light blue button-down shirt. Head and shoulders, centred, eye level, room above his head. Behind him a light grey wall with a whiteboard and a tall green plant, softly blurred. Soft daylight from the front right, natural skin texture with visible pores, shot like a good webcam on a 28mm lens at f/2.8, sharp focus on the eyes, realistic colour, no text, no logo."
+ },
+ {
+  "name": "c",
+  "seed": 21,
+  "prompt": "Photograph of a friendly South Asian woman in her late twenties, on a video call from her apartment, looking straight into the camera with a relaxed, slight closed-mouth smile. Long straight black hair, brown eyes, a mustard yellow knit sweater. Head and shoulders, centred, eye level, room above her head. Behind her a warm living room with a large window, a hanging plant and a wooden shelf, softly blurred. Soft afternoon daylight, natural skin texture with visible pores, shot like a good webcam on a 28mm lens at f/2.8, sharp focus on the eyes, realistic colour, no text, no logo."
+ },
+ {
+  "name": "d",
+  "seed": 21,
+  "prompt": "Photograph of a friendly East Asian man in his late fifties, on a video call from his study, looking straight into the camera with a relaxed, slight closed-mouth smile. Short grey hair, thin metal glasses, a dark green sweater over a collared shirt. Head and shoulders, centred, eye level, room above his head. Behind him a warm study with a framed map and a brass floor lamp, softly blurred. Soft key light from the front left, natural skin texture with visible pores, shot like a good webcam on a 28mm lens at f/2.8, sharp focus on the eyes, realistic colour, no text, no logo."
+ }
+]

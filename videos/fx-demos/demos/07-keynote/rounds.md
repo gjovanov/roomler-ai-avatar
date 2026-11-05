@@ -1,0 +1,5 @@
+Round 1, stills. Saw: no stage, only a screen: the wall filled the frame, a long lens from far away. Fix, a rebuild: wall 21 wide and 8 high with a teal edge, him 12 units from a 40 mm lens and 12 units in front of the wall, so his size and the depth both work.
+Round 1, stills. Decided: Helen's clip out of the render as well, tracked to her screen in HyperFrames, because a 25 fps clip in Blender would drift off her voice.
+Round 3, finished cut. Saw: he blinked out of existence at 10.7 s, because the next line has no clip. Fix: the camera now leaves him: the last 0.75 s of his clip run backwards from the exact frame he ended on, and the flight carries him out of frame by 11.4 s (read from the tracking data).
+Round 3, finished cut. Saw: MANAGEMENT clipped by the left edge. Fix: size 1.92 to 1.6, moved right; the last 142 frames re-rendered alone.
+Round 2, stills. Saw: MANAGEMENT cut by the frame and by Helen's screen. Fix: size 2.42 to 1.92, moved left 1 unit, raised so his head covers part of it.
