@@ -53,23 +53,29 @@ export class Demo {
   }
   // A cut of the podcast: the voice as its own <audio>, the speaker's lip-synced clip and the listener's, trimmed the
   // same way, the words on this demo's clock. k = the segment; from/to in the narration's seconds; at = this demo's time.
-  span(k, { from, to, at, gain = 1 }) {
+  // fadeIn/fadeOut shape the voice's ends (a cut inside running speech wants a longer fade than one in a silence); hold
+  // keeps the clips' last frame that much longer, for a tile that leaves in a pause after the words.
+  span(k, { from, to, at, gain = 1, fadeIn = 0.012, fadeOut = 0.02, hold = 0 }) {
     const s = talk.segments[k];
     from ??= s.start;
     to ??= s.end;
     const dur = n3(to - from);
-    const tag = `k${k}-${Math.round(from * 10)}`;
+    // Both ends name the cut. Named by `from` alone, 01's first half, shortened with `to`, went on playing round 3's
+    // whole-segment files, trimmed by their duration.
+    const tag = `k${k}-${Math.round(from * 1000)}-${Math.round(to * 1000)}`;
     const wav = path.join(this.dir, "assets", `voice-${tag}.wav`);
-    if (!fs.existsSync(wav)) ff("-ss", String(from), "-to", String(to), "-i", path.join(POD, "narration-v5", "mix.wav"), "-af", `afade=t=in:d=0.012,areverse,afade=t=in:d=0.02,areverse`, wav);
+    // The voice is cut on every build (a moment's work), so its fades are always this build's.
+    ff("-ss", String(from), "-to", String(to), "-i", path.join(POD, "narration-v5", "mix.wav"), "-af", `afade=t=in:d=${fadeIn},areverse,afade=t=in:d=${fadeOut},areverse`, wav);
     const cut = (clip, name) => {
       const f = path.join(this.dir, "assets", name);
-      if (!fs.existsSync(f)) ff("-ss", String(n3(from - s.start)), "-t", String(dur), "-i", clip, "-an", "-c:v", "libx264", "-crf", "12", "-preset", "slow", "-g", "25", "-pix_fmt", "yuv420p", f);
+      if (!fs.existsSync(f)) ff("-ss", String(n3(from - s.start)), "-t", String(dur), "-i", clip, "-an", ...(hold ? ["-vf", `tpad=stop_mode=clone:stop_duration=${hold}`] : []), "-c:v", "libx264", "-crf", "12", "-preset", "slow", "-g", "25", "-pix_fmt", "yuv420p", f);
       return `assets/${name}`;
     };
     const key = `seg${String(k).padStart(2, "0")}-${s.speaker}`;
+    const vtag = hold ? `${tag}-h${Math.round(hold * 1000)}` : tag;
     // A segment the podcast showed full frame has no lip-synced clip: it can only be heard.
-    const talkClip = talk.clips[key] ? cut(talk.clips[key].clip, `talk-${tag}.mp4`) : null;
-    const listenClip = listen[String(k)] ? cut(listen[String(k)].clip, `listen-${tag}.mp4`) : null;
+    const talkClip = talk.clips[key] ? cut(talk.clips[key].clip, `talk-${vtag}.mp4`) : null;
+    const listenClip = listen[String(k)] ? cut(listen[String(k)].clip, `listen-${vtag}.mp4`) : null;
     this.html.push(`<audio id="${this.uid("voice")}" src="assets/voice-${tag}.wav" data-start="${at}" data-duration="${dur}" data-volume="${gain}"></audio>`);
     const words = [];
     for (const w of allWords) {

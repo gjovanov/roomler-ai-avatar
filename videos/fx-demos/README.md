@@ -2,7 +2,8 @@
 
 Ten short films glued from recordings that already exist, to find out what Blender and HyperFrames add to the avatar videos. Claude
 writes code that draws every frame: Blender makes the 3D plate, HyperFrames adds the type, the sound and the footage of people on top,
-ffmpeg finishes it. All the new picture is code, with no AI video model, and no new voice or face is made: the avatars are the existing clips.
+ffmpeg finishes it. All the new picture is code and no new voice is made. The people are existing clips, apart from the four invented
+colleagues in 01's call (Z-Image stills, then listening clips from InfiniteTalk's trained silence).
 
 The idea that holds them together: **a script's jokes and analogies are already a storyboard, so the world builds what the speaker says.**
 A "sports car for your mouse pointer" becomes a mouse pointer that is a sports car, racing across the real recording.
@@ -71,7 +72,12 @@ while the GPU hold file exists or the host is short of memory. `kit/hf.mjs` is t
   speaker said he could not hear. `d.duck()` mixes music and effects into one bed that dips under every voice: a 20 dB median after.
 - A design that reads in 3D can still not read: 03's rail of 120 slots was a row of teal tiles from above. A count and a proportion
   belong in flat graphics, with the 3D behind them.
-- Where two words run together, Whisper's boundary can be 0.3 s off. Cut on the measured trough of the voice (01's pause, at -52.6 dB).
+- The deepest trough near a word boundary can be the wrong gap. 01's -52.6 dB trough was the gap before the "th" of "three", so the
+  pause landed between "replaces" and "three"; Whisper's boundary had been right to 7 ms. Where two words run together there is no
+  silence: cut where the first word's last sound ends (a vowel's 2.2-4.5 kHz band falls 20 dB), fade it out over 45 ms, and check
+  which word each side of the cut ends and starts with.
+- A cache named by part of its inputs serves an old round: `span()` named its cuts by `from` alone, and a span shortened with `to`
+  went on playing round 3's longer files.
 - Move things with transforms or SVG attributes, never CSS `left`/`top` (they snap to whole pixels), and never put a timed wrapper around
   timed videos: time it by opacity, as a tracked tile is. `hyperframes check` flags both.
 - New invented faces come as stills first and move only once a person picks them (`kit/people.ts`).

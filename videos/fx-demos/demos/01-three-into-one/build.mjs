@@ -5,14 +5,17 @@ import { CSS, frame } from "./call.mjs";
 
 // Round 4, Goran: a one-second pause after "...that replaces three", so every beat after it is a second later; and the
 // third slab is a real video call: him speaking, Helen, michael, emma and four invented colleagues listening.
-const CUT = 25.29, PAUSE = 1.0; // the cut in the narration's seconds: the 30 ms trough between "three" and "remote" (-52.6 dB)
+// Round 5: the pause sat before "three" (25.29 s is the gap between "replaces" and its "th"). "three" runs straight into
+// "remote" with no silence, so the cut is where its "ee" ends: the vowel's 2.2-4.5 kHz band falls 20 dB from 25.59 to
+// 25.61 s (Whisper: 25.593). "three" fades out over 45 ms; "remote" keeps its whole r and fades in over 25 ms.
+const CUT = 25.605, PAUSE = 1.0; // the cut, in the narration's seconds
 const d = new Demo("01-three-into-one", { dur: 21 });
 d.plate();
-const g = d.span(3, { to: CUT, at: 0.6 });
-const g2 = d.span(3, { from: CUT, at: g.end + PAUSE });
+const g = d.span(3, { to: CUT, at: 0.6, fadeOut: 0.045, hold: 0.3 });
+const g2 = d.span(3, { from: CUT, at: g.end + PAUSE, fadeIn: 0.025 });
 // Goran says the first sentence on camera; through the pause the three dark slabs stand there with his line; then only his
-// voice carries the three beats, until the call.
-d.tile(g.talk, { start: 0.6, dur: +(g.dur + 0.1).toFixed(3), x: 1508, y: 468, w: 360, ring: C.tealL, z: 22 });
+// voice carries the three beats, until the call. His tile leaves as the pause begins, on its clip's held last frame.
+d.tile(g.talk, { start: 0.6, dur: +(g.dur + 0.24).toFixed(3), x: 1508, y: 468, w: 360, ring: C.tealL, z: 22 });
 d.text("One open-source app that replaces three", { start: 0.75, dur: 4.0, x: 90, y: 860, w: 1330, size: 66, align: "left", accent: { three: C.mint } });
 const t = (w) => g2.words.find((x) => x.word.toLowerCase().startsWith(w)).start;
 d.text("Remote desktop from any browser", { start: t("remote") - 0.05, dur: 3.2, x: 90, y: 900, w: 1600, size: 62, align: "left", accent: { Remote: C.mint, desktop: C.mint } });
