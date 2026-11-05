@@ -7,7 +7,9 @@
 // whole lines and loops on a pause: over one 72 s track whisper-base.en wrote "We live!" 29 times into a
 // 1.6 s pause, and on another lost the last three lines. Per turn, it heard every line of both.
 //
-//   bun tools/avatar/words.ts <narration dir> --out <words.json> [--model openai/whisper-medium.en] [--cpu]
+//   bun tools/avatar/words.ts <narration dir> --out <words.json> [--model openai/whisper-medium.en] [--language bg] [--cpu]
+//
+// Another language: a multilingual model and its language, e.g. --model openai/whisper-large-v3-turbo --language bg.
 //
 // --cpu leaves the GPU to a running render (fine for whisper-base.en; medium on the CPU wants a lot of
 // RAM). The captions show the SCRIPT's words at Whisper's times, so a mishearing never reaches the
@@ -32,7 +34,8 @@ const windows = turns.map((t, k) => {
   return [Math.max(0, t.start - Math.min(PAD, before)), t.end + Math.min(PAD, after)];
 });
 const r = Bun.spawnSync(linuxBash(RENDER_SH, "align", toLinux(join(narr, "voice.wav")), "--model", model,
-  "--windows", windows.map(([a, b]) => `${a.toFixed(3)}:${b.toFixed(3)}`).join(","), ...(args.includes("--cpu") ? ["--cpu"] : [])), { stdout: "pipe", stderr: "pipe" });
+  "--windows", windows.map(([a, b]) => `${a.toFixed(3)}:${b.toFixed(3)}`).join(","), ...(opt("language") ? ["--language", opt("language")!] : []),
+  ...(args.includes("--cpu") ? ["--cpu"] : [])), { stdout: "pipe", stderr: "pipe" });
 if (r.exitCode !== 0) throw new Error(`align-words failed (exit ${r.exitCode}):\n${r.stderr.toString().slice(-1500)}`);
 const res = JSON.parse(r.stdout.toString());
 writeFileSync(resolve(out), JSON.stringify(res) + "\n");

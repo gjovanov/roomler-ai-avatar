@@ -3,7 +3,7 @@
 """Word timestamps for a rendered voice track, printed as one JSON object.
 
     <podcast-server venv>/bin/python align-words.py <audio> [--model openai/whisper-base.en]
-        [--windows a:b,c:d,...] [--cpu]
+        [--language bg] [--windows a:b,c:d,...] [--cpu]
 
 Run it with starling's podcast-server venv (torch + transformers, already there for VibeVoice);
 tools/voice/render.sh align does. Whisper (MIT) only transcribes here: the turn boundaries come from
@@ -26,9 +26,12 @@ from transformers import pipeline
 
 args = sys.argv[1:]
 if not args:
-    sys.exit("usage: align-words.py <audio> [--model openai/whisper-base.en] [--windows a:b,...] [--cpu]")
+    sys.exit("usage: align-words.py <audio> [--model openai/whisper-base.en] [--language bg] [--windows a:b,...] [--cpu]")
 audio = args[0]
 model = args[args.index("--model") + 1] if "--model" in args else "openai/whisper-base.en"
+# --language bg: a multilingual model told the language, not left to guess it per window (a short Bulgarian turn
+# was heard as Russian or Serbian). Not for the .en models, which take no language.
+language = args[args.index("--language") + 1] if "--language" in args else None
 windows = [tuple(float(v) for v in w.split(":")) for w in args[args.index("--windows") + 1].split(",")] if "--windows" in args else []
 gpu = torch.cuda.is_available() and "--cpu" not in args
 
@@ -47,7 +50,8 @@ asr = pipeline(
 
 
 def transcribe(seg, offset):
-    out = asr({"raw": seg, "sampling_rate": 16000}, return_timestamps="word", chunk_length_s=30, batch_size=8)
+    gk = {"language": language, "task": "transcribe"} if language else {}
+    out = asr({"raw": seg, "sampling_rate": 16000}, return_timestamps="word", chunk_length_s=30, batch_size=8, generate_kwargs=gk)
     words = [
         {"word": c["text"].strip(), "start": round(float(c["timestamp"][0]) + offset, 3),
          "end": round(float(c["timestamp"][1] if c["timestamp"][1] is not None else c["timestamp"][0]) + offset, 3)}
